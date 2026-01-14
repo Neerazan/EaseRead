@@ -16,9 +16,10 @@
 7. [Dependency Management](#dependency-management)
 8. [Sharing Code Between Apps](#sharing-code-between-apps)
 9. [Common Tasks & Commands](#common-tasks--commands)
-10. [Quality Control (Prettier & Husky)](#quality-control-prettier--husky)
-11. [Best Practices](#best-practices)
-12. [Troubleshooting](#troubleshooting)
+10. [Docker & Database](#docker--database)
+11. [Quality Control (Prettier & Husky)](#quality-control-prettier--husky)
+12. [Best Practices](#best-practices)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -565,7 +566,40 @@ console.log(formatDate(user.createdAt));
 
 ---
 
-## Common Tasks & Commands
+---
+
+## Docker & Database
+
+We use Docker to manage our local development database. This ensures consistency and avoids the need to install PostgreSQL directly on your machine.
+
+### 1. Configuration
+
+- **File**: `docker-compose.yml` (at root)
+- **Environment**: `.env` (at root)
+
+### 2. Available Scripts
+
+Run these from the root directory:
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| `yarn db:up` | `docker compose up -d` | Start database in background |
+| `yarn db:down` | `docker compose down` | Stop and remove containers |
+| `yarn db:logs` | `docker compose logs -f`| View live database logs |
+
+### 3. Services
+
+#### PostgreSQL
+- **Default Port**: `5432`
+- **Hostname**: `localhost` (from your machine) or `db` (between containers)
+
+#### pgAdmin (GUI)
+- **Port**: `5050`
+- **URL**: [http://localhost:5050](http://localhost:5050)
+- **Credentials**: See `.env` (`admin@admin.com` / `admin`)
+
+---
+
 
 ### Quick Reference
 
