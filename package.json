@@ -1,0 +1,24 @@
+{
+  "name": "easeread",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspaces foreach -Ap --include '@easeread/web' --include '@easeread/api' run dev",
+    "dev:web": "yarn workspace @easeread/web dev",
+    "dev:api": "yarn workspace @easeread/api start:dev",
+    "build": "yarn workspaces foreach -Ap run build",
+    "build:web": "yarn workspace @easeread/web build",
+    "build:api": "yarn workspace @easeread/api build",
+    "lint": "yarn workspaces foreach -Ap run lint",
+    "test": "yarn workspaces foreach -Ap run test",
+    "clean": "yarn workspaces foreach -Ap run clean && rm -rf node_modules"
+  },
+  "packageManager": "yarn@4.12.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
