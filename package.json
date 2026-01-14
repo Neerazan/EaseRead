@@ -14,11 +14,24 @@
     "build:web": "yarn workspace @easeread/web build",
     "build:api": "yarn workspace @easeread/api build",
     "lint": "yarn workspaces foreach -Ap run lint",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
+    "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "test": "yarn workspaces foreach -Ap run test",
-    "clean": "yarn workspaces foreach -Ap run clean && rm -rf node_modules"
+    "clean": "yarn workspaces foreach -Ap run clean && rm -rf node_modules",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
   },
   "packageManager": "yarn@4.12.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "prettier": "^3.5.1"
   }
 }

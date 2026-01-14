@@ -16,8 +16,9 @@
 7. [Dependency Management](#dependency-management)
 8. [Sharing Code Between Apps](#sharing-code-between-apps)
 9. [Common Tasks & Commands](#common-tasks--commands)
-10. [Best Practices](#best-practices)
-11. [Troubleshooting](#troubleshooting)
+10. [Quality Control (Prettier & Husky)](#quality-control-prettier--husky)
+11. [Best Practices](#best-practices)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -597,7 +598,41 @@ yarn workspace @easeread/api exec nest g resource users
 
 ---
 
-## Best Practices
+---
+
+## Quality Control (Prettier & Husky)
+
+To maintain a consistent coding style and prevent bad code from being committed, we use **Prettier**, **Husky**, and **lint-staged**.
+
+### 1. Prettier (Code Formatter)
+
+Prettier is configured at the root to ensure every file in the monorepo follows the same style.
+
+| Command | Description |
+|---------|-------------|
+| `yarn format:check` | Check if any files need formatting |
+| `yarn format:fix` | Automatically fix formatting in all files |
+
+- **Config**: `.prettierrc`
+- **Ignored Files**: `.prettierignore`
+
+### 2. Husky & lint-staged (Git Hooks)
+
+Husky manages Git hooks, and we use the `pre-commit` hook to run `lint-staged`.
+
+- **How it works**: When you run `git commit`, Husky triggers `lint-staged`.
+- **lint-staged**: This tool identifies exactly which files were changed and runs Prettier only on those files. This makes the process extremely fast.
+
+**Workflow:**
+1. You change `apps/web/src/app/page.tsx`.
+2. You run `git add .`.
+3. You run `git commit -m "update page"`.
+4. **Prettier** automatically formats your file.
+5. If the formatting changes, those changes are added to your commit automatically.
+6. The commit completes.
+
+---
+
 
 ### 1. Dependency Management
 
