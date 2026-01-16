@@ -18,6 +18,9 @@
     "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "test": "yarn workspaces foreach -Ap run test",
     "clean": "yarn workspaces foreach -Ap run clean && rm -rf node_modules",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f",
     "prepare": "husky"
   },
   "lint-staged": {
