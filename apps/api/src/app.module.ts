@@ -38,7 +38,6 @@ import { UserModule } from './user/user.module';
     }),
 
     IamModule,
-
     UserModule,
   ],
   controllers: [AppController],
