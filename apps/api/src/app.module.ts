@@ -1,18 +1,19 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
-import { validationSchema } from './config/validation.schema';
 import { configs } from './config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
+import { validationSchema } from './config/validation.schema';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: validationSchema,
-      envFilePath: '../../.env',
+      envFilePath: resolve(__dirname, '../../../.env'),
       load: configs,
     }),
 
