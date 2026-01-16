@@ -7,6 +7,8 @@ import { AppService } from './app.service';
 import { configs } from './config';
 import databaseConfig from './config/database.config';
 import { validationSchema } from './config/validation.schema';
+import { IamModule } from './iam/iam.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -34,6 +36,10 @@ import { validationSchema } from './config/validation.schema';
       },
       inject: [ConfigService],
     }),
+
+    IamModule,
+
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

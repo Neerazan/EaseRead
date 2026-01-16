@@ -1,0 +1,52 @@
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  /* ---------- Identity ---------- */
+
+  @Index({ unique: true })
+  @Column({ nullable: false })
+  email: string;
+
+  @Index({ unique: true })
+  @Column({ nullable: false })
+  username: string;
+
+  @Column({ nullable: false })
+  fullName: string;
+
+  /* ---------- Authentication ---------- */
+
+  @Column({ nullable: false })
+  passwordHash: string;
+
+  /* ---------- Status ---------- */
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastLoginAt?: Date;
+
+  /* ---------- Timestamps ---------- */
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt?: Date;
+}
