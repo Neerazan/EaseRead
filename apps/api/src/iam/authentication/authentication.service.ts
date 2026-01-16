@@ -26,10 +26,11 @@ export class AuthenticationService {
       });
       return this.userRepository.save(user);
     } catch (error) {
-      const pgUniqueVioletionKey = '23505';
-      if (error.code === pgUniqueVioletionKey) {
+      const PG_UNIQUE_VIOLATION = '23505';
+      if (error.code === PG_UNIQUE_VIOLATION) {
         throw new ConflictException('User with email already exist.');
       }
+      throw error;
     }
   }
 }
