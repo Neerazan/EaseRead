@@ -11,5 +11,11 @@ export class UserResponseDto {
   username: string;
 
   @Expose()
-  fullName: string;
+  name: string;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 }

@@ -18,10 +18,10 @@ export class AuthenticationService {
 
   async signUp(signUpDto: SignUpDto) {
     try {
-      const { email, fullName, password, username } = signUpDto;
+      const { email, name, password, username } = signUpDto;
       const hashedPassword = await this.hashingService.hash(password);
       const user = this.userRepository.create({
-        fullName,
+        name,
         username,
         email,
         passwordHash: hashedPassword,

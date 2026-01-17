@@ -25,7 +25,7 @@ export class User {
   username: string;
 
   @Column({ nullable: false })
-  fullName: string;
+  name: string;
 
   /* ---------- Authentication ---------- */
 

@@ -5,7 +5,7 @@ export class SignUpDto {
   @Length(3, 100, {
     message: 'Full name must be between 3 and 100 characters',
   })
-  readonly fullName: string;
+  readonly name: string;
 
   @IsEmail()
   readonly email: string;
