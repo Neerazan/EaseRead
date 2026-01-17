@@ -3,7 +3,7 @@ import { IsString, IsEmail, Length, IsStrongPassword } from 'class-validator';
 export class SignUpDto {
   @IsString()
   @Length(3, 100, {
-    message: 'Full name must be between 3 and 100 characters',
+    message: 'name must be between 3 and 100 characters',
   })
   readonly name: string;
 
