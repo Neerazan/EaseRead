@@ -28,7 +28,7 @@ export class User {
 
   /* ---------- Authentication ---------- */
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   passwordHash: string;
 
   /* ---------- Status ---------- */

@@ -4,6 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { HashingService } from '../hashing/hashing.service';
 import { SignUpDto } from './dto/sign-up.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from 'src/user/dto/user-response.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -25,11 +27,9 @@ export class AuthenticationService {
         passwordHash: hashedPassword,
       });
       const createdUser = await this.userRepository.save(user);
-      return {
-        username: createdUser.username,
-        fullName: createdUser.fullName,
-        email: createdUser.email,
-      };
+      return plainToInstance(UserResponseDto, createdUser, {
+        excludeExtraneousValues: true,
+      });
     } catch (error) {
       const PG_UNIQUE_VIOLATION = '23505';
       if (error.code === PG_UNIQUE_VIOLATION) {
