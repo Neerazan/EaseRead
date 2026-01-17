@@ -16,11 +16,12 @@ export class User {
   /* ---------- Identity ---------- */
 
   @Index({ unique: true })
-  @Column({ nullable: false })
+  @Column({ type: 'citext', nullable: false })
   email: string;
 
   @Index({ unique: true })
-  @Column({ nullable: false })
+  @Column({ type: 'citext', nullable: false })
+  // "type: 'citext' implement case insennsitive uniqueness to db level."
   username: string;
 
   @Column({ nullable: false })
