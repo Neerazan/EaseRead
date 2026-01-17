@@ -24,7 +24,12 @@ export class AuthenticationService {
         email,
         passwordHash: hashedPassword,
       });
-      return this.userRepository.save(user);
+      const createdUser = await this.userRepository.save(user);
+      return {
+        username: createdUser.username,
+        fullName: createdUser.fullName,
+        email: createdUser.email,
+      };
     } catch (error) {
       const PG_UNIQUE_VIOLATION = '23505';
       if (error.code === PG_UNIQUE_VIOLATION) {
