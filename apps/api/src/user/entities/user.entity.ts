@@ -21,7 +21,7 @@ export class User {
 
   @Index({ unique: true })
   @Column({ type: 'citext', nullable: false })
-  // "type: 'citext' implement case insennsitive uniqueness to db level."
+  // "type: 'citext' implement case insensitive uniqueness to db level."
   username: string;
 
   @Column({ nullable: false })
