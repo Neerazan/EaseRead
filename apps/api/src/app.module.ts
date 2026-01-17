@@ -9,6 +9,7 @@ import databaseConfig from './config/database.config';
 import { validationSchema } from './config/validation.schema';
 import { IamModule } from './iam/iam.module';
 import { UserModule } from './user/user.module';
+import { DatabaseInitializationService } from './database/database-initialization.service';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { UserModule } from './user/user.module';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DatabaseInitializationService],
 })
 export class AppModule {}
