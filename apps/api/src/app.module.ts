@@ -4,12 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoggerModule } from './common/logger';
 import { configs } from './config';
 import databaseConfig from './config/database.config';
 import { validationSchema } from './config/validation.schema';
+import { DatabaseInitializationService } from './database/database-initialization.service';
 import { IamModule } from './iam/iam.module';
 import { UserModule } from './user/user.module';
-import { DatabaseInitializationService } from './database/database-initialization.service';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { DatabaseInitializationService } from './database/database-initializatio
 
     IamModule,
     UserModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseInitializationService],
