@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { DbErrorResponse } from '../../interfaces';
 import { DbErrorHandler } from '../interfaces';
 
@@ -13,6 +13,7 @@ import { DbErrorHandler } from '../interfaces';
  *
  * @see https://www.mongodb.com/docs/manual/reference/error-codes/
  */
+@Injectable()
 export class MongoErrorHandler implements DbErrorHandler {
   /**
    * Checks if the error is a MongoDB driver error.

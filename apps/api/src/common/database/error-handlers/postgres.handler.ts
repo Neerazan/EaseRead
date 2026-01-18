@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { DbErrorResponse } from '../../interfaces';
 import { DbErrorHandler } from '../interfaces';
 
@@ -16,6 +16,7 @@ import { DbErrorHandler } from '../interfaces';
  *
  * @see https://www.postgresql.org/docs/current/errcodes-appendix.html
  */
+@Injectable()
 export class PostgresErrorHandler implements DbErrorHandler {
   /**
    * Checks if the error is a PostgreSQL driver error.

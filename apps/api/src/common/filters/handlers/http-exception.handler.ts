@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ErrorResponse, ValidationErrorDetail } from '../../interfaces';
 
 /**
@@ -21,6 +21,7 @@ export const HTTP_STATUS_TO_ERROR_CODE: Record<number, string> = {
 /**
  * Handles HttpExceptions (including built-in NestJS exceptions and BusinessException)
  */
+@Injectable()
 export class HttpExceptionHandler {
   handle(exception: HttpException, path: string): ErrorResponse {
     const status = exception.getStatus();

@@ -1,9 +1,10 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ErrorResponse } from '../../interfaces';
 
 /**
  * Handles unknown/unexpected errors
  */
+@Injectable()
 export class UnknownExceptionHandler {
   handle(exception: unknown, path: string): ErrorResponse {
     return {

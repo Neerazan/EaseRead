@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { DbErrorHandlerRegistry } from '../../database';
 import { ErrorResponse } from '../../interfaces';
 
 /**
  * Handles database errors by delegating to the DbErrorHandlerRegistry
  */
+@Injectable()
 export class DatabaseExceptionHandler {
   constructor(private readonly dbErrorRegistry: DbErrorHandlerRegistry) {}
 

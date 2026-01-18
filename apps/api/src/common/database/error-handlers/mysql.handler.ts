@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { DbErrorResponse } from '../../interfaces';
 import { DbErrorHandler } from '../interfaces';
 
@@ -16,6 +16,7 @@ import { DbErrorHandler } from '../interfaces';
  *
  * @see https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
  */
+@Injectable()
 export class MySQLErrorHandler implements DbErrorHandler {
   /**
    * Checks if the error is a MySQL driver error.

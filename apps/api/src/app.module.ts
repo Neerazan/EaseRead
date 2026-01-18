@@ -1,9 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DbErrorHandlerRegistry } from './common/database';
+import {
+  MongoErrorHandler,
+  MySQLErrorHandler,
+  PostgresErrorHandler,
+} from './common/database/error-handlers';
+import { AllExceptionsFilter } from './common/filters';
+import {
+  DatabaseExceptionHandler,
+  HttpExceptionHandler,
+  UnknownExceptionHandler,
+} from './common/filters/handlers';
 import { LoggerModule } from './common/logger';
 import { configs } from './config';
 import databaseConfig from './config/database.config';
@@ -44,6 +57,20 @@ import { UserModule } from './user/user.module';
     LoggerModule,
   ],
   controllers: [AppController],
-  providers: [AppService, DatabaseInitializationService],
+  providers: [
+    AppService,
+    DatabaseInitializationService,
+    PostgresErrorHandler,
+    MySQLErrorHandler,
+    MongoErrorHandler,
+    DbErrorHandlerRegistry,
+    HttpExceptionHandler,
+    DatabaseExceptionHandler,
+    UnknownExceptionHandler,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

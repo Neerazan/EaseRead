@@ -5,7 +5,6 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { DbErrorHandlerRegistry } from '../database';
 import { ErrorResponse } from '../interfaces';
 import { LoggerService } from '../logger';
 import {
@@ -27,16 +26,12 @@ import {
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly httpHandler: HttpExceptionHandler;
-  private readonly dbHandler: DatabaseExceptionHandler;
-  private readonly unknownHandler: UnknownExceptionHandler;
-
-  constructor(private readonly logger: LoggerService) {
-    const dbRegistry = new DbErrorHandlerRegistry();
-    this.httpHandler = new HttpExceptionHandler();
-    this.dbHandler = new DatabaseExceptionHandler(dbRegistry);
-    this.unknownHandler = new UnknownExceptionHandler();
-  }
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly httpHandler: HttpExceptionHandler,
+    private readonly dbHandler: DatabaseExceptionHandler,
+    private readonly unknownHandler: UnknownExceptionHandler,
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();

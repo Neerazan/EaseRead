@@ -29,12 +29,16 @@ import { PostgresErrorHandler } from './postgres.handler';
 export class DbErrorHandlerRegistry {
   private readonly handlers: DbErrorHandler[] = [];
 
-  constructor() {
+  constructor(
+    private readonly postgresHandler: PostgresErrorHandler,
+    private readonly mysqlHandler: MySQLErrorHandler,
+    private readonly mongoHandler: MongoErrorHandler,
+  ) {
     // Register all database handlers
     // Order matters - more specific handlers should come first
-    this.handlers.push(new PostgresErrorHandler());
-    this.handlers.push(new MySQLErrorHandler());
-    this.handlers.push(new MongoErrorHandler());
+    this.handlers.push(this.postgresHandler);
+    this.handlers.push(this.mysqlHandler);
+    this.handlers.push(this.mongoHandler);
   }
 
   /**

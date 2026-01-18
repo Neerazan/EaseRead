@@ -2,7 +2,6 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './common/filters';
 import { ResponseInterceptor } from './common/interceptors';
 import { ValidationErrorDetail } from './common/interfaces';
 import { LoggerService } from './common/logger';
@@ -52,9 +51,6 @@ async function bootstrap() {
   const logger = app.get(LoggerService);
   app.useLogger(logger);
 
-  // Global exception filter - catches ALL errors and returns consistent format
-  app.useGlobalFilters(new AllExceptionsFilter(logger));
-
   // Global validation pipe with custom exception factory
   app.useGlobalPipes(
     new ValidationPipe({
@@ -75,7 +71,7 @@ async function bootstrap() {
   // Global interceptor for consistent success response format and logging
   app.useGlobalInterceptors(new ResponseInterceptor(logger));
 
-  const port = process.env.PORT ?? 4000;
+  const port = process.env.PORT ?? 3000;
   await app.listen(port);
   logger.log(`Application is running on port ${port}`, 'Bootstrap');
 }
