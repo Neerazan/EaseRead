@@ -6,26 +6,20 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SuccessResponse } from '../interfaces';
 import { LoggerService } from '../logger/logger.service';
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  timestamp: string;
-  path: string;
-}
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<
   T,
-  ApiResponse<T>
+  SuccessResponse<T>
 > {
   constructor(private readonly logger: LoggerService) {}
 
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<ApiResponse<T>> {
+  ): Observable<SuccessResponse<T>> {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
     const { method, url, ip, headers } = request;
