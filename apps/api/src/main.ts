@@ -7,8 +7,12 @@ import { ValidationErrorDetail } from './common/interfaces';
 import { LoggerService } from './common/logger';
 
 /**
- * Recursively extracts validation error messages from nested ValidationError objects.
- * Handles both flat and nested DTO validation scenarios.
+ * Extracts and flattens validation error messages from ValidationError objects into field/message pairs.
+ *
+ * Nested property paths use dot notation (e.g., `parent.child`).
+ *
+ * @param errors - The array of ValidationError objects to process
+ * @returns An array of ValidationErrorDetail objects where each item contains a `field` path (dot-separated for nested properties) and a `message`
  */
 function extractValidationErrors(
   errors: ValidationError[],
@@ -42,6 +46,11 @@ function extractValidationErrors(
   return result;
 }
 
+/**
+ * Bootstraps the NestJS application: configures logging, global validation behavior and response formatting, then starts the HTTP server.
+ *
+ * Configures a custom LoggerService, applies a ValidationPipe that strips unknown properties and transforms inputs while converting validation failures into a `BadRequestException` payload with `errorCode: 'VALIDATION_ERROR'`, `message: 'Validation failed'`, and a flattened `errors` array. Also applies a global response interceptor and listens on the port defined by `process.env.PORT` or `3000`, logging the startup message.
+ */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
