@@ -92,7 +92,7 @@ export class MySQLErrorHandler implements DbErrorHandler {
     switch (type) {
       case 'duplicate': {
         // Pattern: "Duplicate entry 'value' for key 'table.field_UNIQUE'"
-        const match = message.match(/for key '(?:[^.]+\.)?([^'_]+)/i);
+        const match = message.match(/for key '(?:[^.]+\.)?([^']+)'/i);
         return match ? match[1] : undefined;
       }
       case 'null': {
