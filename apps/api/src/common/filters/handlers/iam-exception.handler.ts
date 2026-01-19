@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InvalidateRefreshTokenError } from '../../../iam/authentication/refresh-token-ids.storage';
-
 import { ErrorResponse } from '../../interfaces';
 
 /**
@@ -14,23 +13,31 @@ export class IamExceptionHandler {
     'NotBeforeError',
   ];
 
-  canHandle(exception: any): boolean {
+  private asError(exception: unknown): Partial<Error> {
+    return typeof exception === 'object' && exception !== null
+      ? (exception as Partial<Error>)
+      : {};
+  }
+
+  canHandle(exception: unknown): boolean {
+    const err = this.asError(exception);
+    const message = typeof err.message === 'string' ? err.message : '';
     return (
-      this.jwtErrorNames.includes(exception?.name) ||
+      this.jwtErrorNames.includes(err.name ?? '') ||
       exception instanceof InvalidateRefreshTokenError ||
-      exception?.message?.includes('jwt') ||
-      exception?.message?.includes('JWT')
+      /jwt/i.test(message)
     );
   }
 
-  handle(exception: any, path: string): ErrorResponse {
+  handle(exception: unknown, path: string): ErrorResponse {
+    const err = this.asError(exception);
     let errorCode = 'UNAUTHORIZED';
     let message = 'Authentication failed';
 
-    if (exception.name === 'TokenExpiredError') {
+    if (err.name === 'TokenExpiredError') {
       errorCode = 'TOKEN_EXPIRED';
       message = 'Your session has expired.';
-    } else if (exception.name === 'JsonWebTokenError') {
+    } else if (err.name === 'JsonWebTokenError') {
       errorCode = 'INVALID_TOKEN';
       message = 'The provided token is invalid or malformed.';
     } else if (exception instanceof InvalidateRefreshTokenError) {

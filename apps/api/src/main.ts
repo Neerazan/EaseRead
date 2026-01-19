@@ -56,7 +56,7 @@ async function bootstrap() {
   const appConfiguration = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);
 
   app.useLogger(logger);
-  app.use(cookieParser(appConfiguration.cookie_secret));
+  app.use(cookieParser(appConfiguration.cookieSecret));
 
   // Global validation pipe with custom exception factory
   app.useGlobalPipes(
