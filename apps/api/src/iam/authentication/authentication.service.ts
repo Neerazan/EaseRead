@@ -70,7 +70,13 @@ export class AuthenticationService {
     }
 
     const tokens = await this.generateTokens(user);
-    return { ...tokens };
+    return {
+      ...tokens,
+      user: plainToInstance(UserResponseDto, user, {
+        excludeExtraneousValues: true,
+      }),
+      message: 'Logged in successfully!',
+    };
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
@@ -93,7 +99,13 @@ export class AuthenticationService {
       user.id,
       refreshTokenId,
     );
-    return this.generateTokens(user);
+    const tokens = await this.generateTokens(user);
+    return {
+      ...tokens,
+      user: plainToInstance(UserResponseDto, user, {
+        excludeExtraneousValues: true,
+      }),
+    };
   }
 
   private async generateTokens(user: User) {
