@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -58,7 +53,7 @@ export class AuthenticationService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not exist.');
+      throw new UnauthorizedException('Invalid email or password.');
     }
 
     const isCorrect = await this.hashingService.compare(
@@ -66,7 +61,7 @@ export class AuthenticationService {
       user.passwordHash,
     );
     if (!isCorrect) {
-      throw new UnauthorizedException('Incorrect password, try again!');
+      throw new UnauthorizedException('Invalid email or password.');
     }
 
     const tokens = await this.generateTokens(user);
