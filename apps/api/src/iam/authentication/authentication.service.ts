@@ -70,19 +70,20 @@ export class AuthenticationService {
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
-    const result = await this.jwtService.verifyAsync(
-      refreshTokenDto.refreshToken,
-      {
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        secret: this.jwtConfiguration.secret,
-      },
-    );
+    const { sub } = await this.jwtService.verifyAsync<
+      Pick<ActiveUserData, 'sub'>
+    >(refreshTokenDto.refreshToken, {
+      audience: this.jwtConfiguration.audience,
+      issuer: this.jwtConfiguration.issuer,
+      secret: this.jwtConfiguration.secret,
+    });
 
-    console.log('Result: ', result);
-    return {
-      accessToken: 'Nirajan dai',
-    };
+    const user = await this.userRepository.findOne({ where: { id: sub } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token.');
+    }
+
+    return this.generateTokens(user);
   }
 
   private async generateTokens(user: User) {
