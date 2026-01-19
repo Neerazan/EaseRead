@@ -33,12 +33,8 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.10",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.1",
     "prettier": "^3.5.1"
-  },
-  "dependencies": {
-    "cookie-parser": "^1.4.7"
   }
 }

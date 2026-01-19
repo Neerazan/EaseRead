@@ -1,4 +1,5 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import cookieParser from 'cookie-parser';
@@ -7,6 +8,7 @@ import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors';
 import { ValidationErrorDetail } from './common/interfaces';
 import { LoggerService } from './common/logger';
+import appConfig from './config/app.config';
 
 /**
  * Recursively extracts validation error messages from nested ValidationError objects.
@@ -51,8 +53,10 @@ async function bootstrap() {
 
   // Use custom logger
   const logger = app.get(LoggerService);
+  const appConfiguration = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);
+
   app.useLogger(logger);
-  app.use(cookieParser());
+  app.use(cookieParser(appConfiguration.cookie_secret));
 
   // Global validation pipe with custom exception factory
   app.useGlobalPipes(

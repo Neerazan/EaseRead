@@ -57,6 +57,7 @@ export class AuthenticationInterceptor implements NestInterceptor {
           sameSite: 'lax',
           secure: this.appConfiguration.env === 'production',
           path: '/',
+          signed: true,
         };
 
         response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, options);

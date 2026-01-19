@@ -5,16 +5,12 @@ import {
   HttpStatus,
   Post,
   Req,
-  Res,
   UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
-import { type Request, type Response } from 'express';
+import { type Request } from 'express';
 import { AuthenticationService } from './authentication.service';
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from './constants/auth.constants';
+import { REFRESH_TOKEN_COOKIE_NAME } from './constants/auth.constants';
 import { SetAuthCookies } from './decorators/set-auth-cookies.decorator';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -41,7 +37,7 @@ export class AuthenticationController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() request: Request) {
-    const refreshToken = request.cookies[REFRESH_TOKEN_COOKIE_NAME];
+    const refreshToken = request.signedCookies[REFRESH_TOKEN_COOKIE_NAME];
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
