@@ -2,7 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { REDIS_CLIENT } from '../../redis/redis.constants';
 
-export class InvalidateRefreshTokenError extends Error {}
+export class InvalidateRefreshTokenError extends Error {
+  constructor(message = 'Refresh Token invalid or has already been used') {
+    super(message);
+    this.name = 'InvalidateRefreshTokenError';
+  }
+}
 
 @Injectable()
 export class RefreshTokenIdsStorage {

@@ -35,7 +35,7 @@ export class IamExceptionHandler {
       message = 'The provided token is invalid or malformed.';
     } else if (exception instanceof InvalidateRefreshTokenError) {
       errorCode = 'INVALID_REFRESH_TOKEN';
-      message = 'The refresh token is no longer valid.';
+      message = exception.message || 'The refresh token is no longer valid.';
     }
 
     return {
