@@ -25,7 +25,8 @@ export class IamExceptionHandler {
     return (
       this.jwtErrorNames.includes(err.name ?? '') ||
       exception instanceof InvalidateRefreshTokenError ||
-      /jwt/i.test(message)
+      // /jwt/i.test(message)
+      false
     );
   }
 
