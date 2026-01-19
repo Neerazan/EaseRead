@@ -49,7 +49,15 @@ export class AuthenticationService {
     const { email, password } = signInDto;
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'passwordHash', 'name'],
+      select: [
+        'id',
+        'email',
+        'username',
+        'name',
+        'passwordHash',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
     if (!user) {
