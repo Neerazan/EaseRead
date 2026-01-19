@@ -1,6 +1,8 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
+import cookieParser from 'cookie-parser';
+
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors';
 import { ValidationErrorDetail } from './common/interfaces';
@@ -50,6 +52,7 @@ async function bootstrap() {
   // Use custom logger
   const logger = app.get(LoggerService);
   app.useLogger(logger);
+  app.use(cookieParser());
 
   // Global validation pipe with custom exception factory
   app.useGlobalPipes(
