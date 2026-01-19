@@ -89,8 +89,10 @@ export class AuthenticationService {
       throw new UnauthorizedException('Invalid refresh token.');
     }
 
-    await this.refreshTokenIdsStorage.validate(user.id, refreshTokenId);
-    await this.refreshTokenIdsStorage.invalidate(user.id);
+    await this.refreshTokenIdsStorage.validateAndInvalidate(
+      user.id,
+      refreshTokenId,
+    );
     return this.generateTokens(user);
   }
 
