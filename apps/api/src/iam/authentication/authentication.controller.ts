@@ -6,11 +6,11 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { SignUpDto } from './dto/sign-up.dto';
-import { AuthenticationService } from './authentication.service';
-import { SignInDto } from './dto/sign-in.dto';
 import { CookieOptions, type Response } from 'express';
+import { AuthenticationService } from './authentication.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -43,7 +43,21 @@ export class AuthenticationController {
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshToken(refreshTokenDto);
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const tokens = await this.authService.refreshToken(refreshTokenDto);
+
+    const options: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+    };
+
+    response.cookie('access_token', tokens.accessToken, options);
+    response.cookie('refresh_token', tokens.refreshToken, options);
+
+    return { ...tokens };
   }
 }

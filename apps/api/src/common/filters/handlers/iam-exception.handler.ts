@@ -1,4 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { InvalidateRefreshTokenError } from '../../../iam/authentication/refresh-token-ids.storage';
+
 import { ErrorResponse } from '../../interfaces';
 
 /**
@@ -15,6 +17,7 @@ export class IamExceptionHandler {
   canHandle(exception: any): boolean {
     return (
       this.jwtErrorNames.includes(exception?.name) ||
+      exception instanceof InvalidateRefreshTokenError ||
       exception?.message?.includes('jwt') ||
       exception?.message?.includes('JWT')
     );
@@ -30,6 +33,9 @@ export class IamExceptionHandler {
     } else if (exception.name === 'JsonWebTokenError') {
       errorCode = 'INVALID_TOKEN';
       message = 'The provided token is invalid or malformed.';
+    } else if (exception instanceof InvalidateRefreshTokenError) {
+      errorCode = 'INVALID_REFRESH_TOKEN';
+      message = 'The refresh token is no longer valid.';
     }
 
     return {

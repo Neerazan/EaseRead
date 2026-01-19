@@ -8,6 +8,7 @@ import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
+import { randomUUID } from 'crypto';
 import { UserResponseDto } from 'src/user/dto/user-response.dto';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +18,7 @@ import { ActiveUserData } from '../interfaces/action-user-data.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -29,6 +31,8 @@ export class AuthenticationService {
 
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+
+    private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -70,8 +74,10 @@ export class AuthenticationService {
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
-    const { sub } = await this.jwtService.verifyAsync<
-      Pick<ActiveUserData, 'sub'>
+    const { sub, refreshTokenId } = await this.jwtService.verifyAsync<
+      Pick<ActiveUserData, 'sub'> & {
+        refreshTokenId: string;
+      }
     >(refreshTokenDto.refreshToken, {
       audience: this.jwtConfiguration.audience,
       issuer: this.jwtConfiguration.issuer,
@@ -83,18 +89,25 @@ export class AuthenticationService {
       throw new UnauthorizedException('Invalid refresh token.');
     }
 
+    await this.refreshTokenIdsStorage.validate(user.id, refreshTokenId);
+    await this.refreshTokenIdsStorage.invalidate(user.id);
     return this.generateTokens(user);
   }
 
   private async generateTokens(user: User) {
+    const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken<Partial<ActiveUserData>>(
         user.id,
         this.jwtConfiguration.access_token_ttl,
         { email: user.email },
       ),
-      this.signToken(user.id, this.jwtConfiguration.refresh_token_ttl),
+      this.signToken(user.id, this.jwtConfiguration.refresh_token_ttl, {
+        refreshTokenId,
+      }),
     ]);
+
+    await this.refreshTokenIdsStorage.insert(user.id, refreshTokenId);
 
     return {
       accessToken,
