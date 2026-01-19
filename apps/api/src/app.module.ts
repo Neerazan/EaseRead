@@ -15,6 +15,7 @@ import { AllExceptionsFilter } from './common/filters';
 import {
   DatabaseExceptionHandler,
   HttpExceptionHandler,
+  IamExceptionHandler,
   UnknownExceptionHandler,
 } from './common/filters/handlers';
 import { LoggerModule } from './common/logger';
@@ -24,6 +25,7 @@ import { validationSchema } from './config/validation.schema';
 import { DatabaseInitializationService } from './database/database-initialization.service';
 import { IamModule } from './iam/iam.module';
 import { UserModule } from './user/user.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -55,6 +57,7 @@ import { UserModule } from './user/user.module';
     IamModule,
     UserModule,
     LoggerModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
@@ -66,6 +69,7 @@ import { UserModule } from './user/user.module';
     DbErrorHandlerRegistry,
     HttpExceptionHandler,
     DatabaseExceptionHandler,
+    IamExceptionHandler,
     UnknownExceptionHandler,
     {
       provide: APP_FILTER,

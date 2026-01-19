@@ -10,6 +10,7 @@ import { LoggerService } from '../logger';
 import {
   DatabaseExceptionHandler,
   HttpExceptionHandler,
+  IamExceptionHandler,
   UnknownExceptionHandler,
 } from './handlers';
 
@@ -30,6 +31,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     private readonly logger: LoggerService,
     private readonly httpHandler: HttpExceptionHandler,
     private readonly dbHandler: DatabaseExceptionHandler,
+    private readonly iamHandler: IamExceptionHandler,
     private readonly unknownHandler: UnknownExceptionHandler,
   ) {}
 
@@ -41,25 +43,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let errorResponse: ErrorResponse;
 
-    // 1. Handle HttpException
     if (exception instanceof HttpException) {
       errorResponse = this.httpHandler.handle(exception, path);
-    }
-    // 2. Handle database errors
-    else if (this.dbHandler.canHandle(exception)) {
+    } else if (this.iamHandler.canHandle(exception)) {
+      errorResponse = this.iamHandler.handle(exception, path);
+    } else if (this.dbHandler.canHandle(exception)) {
       const dbResponse = this.dbHandler.handle(exception, path);
-      // Fallback to unknown handler if dbHandler returns null (unlikely if canHandle is true)
       errorResponse = dbResponse || this.unknownHandler.handle(exception, path);
-    }
-    // 3. Handle unknown errors
-    else {
+    } else {
       errorResponse = this.unknownHandler.handle(exception, path);
     }
 
-    // Log the error with appropriate level
     this.logError(exception, errorResponse, request);
-
-    // Send response
     response.status(errorResponse.error.statusCode).json(errorResponse);
   }
 
