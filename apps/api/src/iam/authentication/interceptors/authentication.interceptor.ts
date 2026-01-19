@@ -62,7 +62,6 @@ export class AuthenticationInterceptor implements NestInterceptor {
         response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, options);
         response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, options);
 
-        // Remove tokens from the response body to ensure professional security
         return {
           ...rest,
         };
