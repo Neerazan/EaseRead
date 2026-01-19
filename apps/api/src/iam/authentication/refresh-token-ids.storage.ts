@@ -11,8 +11,8 @@ export class RefreshTokenIdsStorage {
     private readonly redisClient: Redis,
   ) {}
 
-  async insert(userId: string, tokenId: string): Promise<void> {
-    await this.redisClient.set(this.getKey(userId), tokenId);
+  async insert(userId: string, tokenId: string, ttl: number): Promise<void> {
+    await this.redisClient.set(this.getKey(userId), tokenId, 'EX', ttl);
   }
 
   /**

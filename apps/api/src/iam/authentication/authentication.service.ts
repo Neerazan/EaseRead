@@ -116,7 +116,11 @@ export class AuthenticationService {
       }),
     ]);
 
-    await this.refreshTokenIdsStorage.insert(user.id, refreshTokenId);
+    await this.refreshTokenIdsStorage.insert(
+      user.id,
+      refreshTokenId,
+      this.jwtConfiguration.refresh_token_ttl,
+    );
 
     return {
       accessToken,
