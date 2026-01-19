@@ -10,6 +10,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { AuthenticationService } from './authentication.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { CookieOptions, type Response } from 'express';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -38,5 +39,11 @@ export class AuthenticationController {
     response.cookie('refresh_token', tokens.refreshToken, options);
 
     return { ...tokens };
+  }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refreshTokenDto);
   }
 }

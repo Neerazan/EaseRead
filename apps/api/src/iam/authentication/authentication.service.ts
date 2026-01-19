@@ -16,6 +16,7 @@ import { HashingService } from '../hashing/hashing.service';
 import { ActiveUserData } from '../interfaces/action-user-data.interface';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -66,6 +67,22 @@ export class AuthenticationService {
 
     const tokens = await this.generateTokens(user);
     return { ...tokens };
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    const result = await this.jwtService.verifyAsync(
+      refreshTokenDto.refreshToken,
+      {
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+        secret: this.jwtConfiguration.secret,
+      },
+    );
+
+    console.log('Result: ', result);
+    return {
+      accessToken: 'Nirajan dai',
+    };
   }
 
   private async generateTokens(user: User) {

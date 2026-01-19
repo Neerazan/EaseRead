@@ -15,6 +15,7 @@ import { AllExceptionsFilter } from './common/filters';
 import {
   DatabaseExceptionHandler,
   HttpExceptionHandler,
+  IamExceptionHandler,
   UnknownExceptionHandler,
 } from './common/filters/handlers';
 import { LoggerModule } from './common/logger';
@@ -66,6 +67,7 @@ import { UserModule } from './user/user.module';
     DbErrorHandlerRegistry,
     HttpExceptionHandler,
     DatabaseExceptionHandler,
+    IamExceptionHandler,
     UnknownExceptionHandler,
     {
       provide: APP_FILTER,
