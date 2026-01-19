@@ -50,16 +50,17 @@ export class AuthenticationController {
     return this.authService.refreshToken({ refreshToken });
   }
 
-  @Post('sign-out')
-  @HttpCode(HttpStatus.OK)
-  async signOut(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
-    response.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
-      maxAge: 0,
-      httpOnly: true,
-    });
-    return {
-      message: 'Sign out successful',
-    };
-  }
+  // @Post('sign-out')
+  // @HttpCode(HttpStatus.OK)
+  // async signOut(@Res({ passthrough: true }) response: Response) {
+
+  //   response.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
+  //   response.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
+  //     maxAge: 0,
+  //     httpOnly: true,
+  //   });
+  //   return {
+  //     message: 'Sign out successful',
+  //   };
+  // }
 }
