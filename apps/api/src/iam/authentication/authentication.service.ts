@@ -111,6 +111,10 @@ export class AuthenticationService {
     };
   }
 
+  async signOut(userId: string) {
+    await this.refreshTokenIdsStorage.invalidate(userId);
+  }
+
   private async generateTokens(user: User) {
     const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
