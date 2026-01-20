@@ -52,6 +52,10 @@ export class RefreshTokenIdsStorage {
     }
   }
 
+  async invalidate(userId: string): Promise<void> {
+    await this.redisClient.del(this.getKey(userId));
+  }
+
   private getKey(userId: string): string {
     return `user-${userId}`;
   }

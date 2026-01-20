@@ -5,12 +5,18 @@ import {
   HttpStatus,
   Post,
   Req,
+  Res,
   UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
-import { type Request } from 'express';
+import type { Request, Response } from 'express';
+import { ActiveUser } from '../decorators/active-user.decorator';
+import type { ActiveUserData } from '../interfaces/action-user-data.interface';
 import { AuthenticationService } from './authentication.service';
-import { REFRESH_TOKEN_COOKIE_NAME } from './constants/auth.constants';
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_NAME,
+} from './constants/auth.constants';
 import { Auth } from './decorators/auth.decorator';
 import { SetAuthCookies } from './decorators/set-auth-cookies.decorator';
 import { SignInDto } from './dto/sign-in.dto';
@@ -49,17 +55,17 @@ export class AuthenticationController {
     return this.authService.refreshToken({ refreshToken });
   }
 
-  // @Post('sign-out')
-  // @HttpCode(HttpStatus.OK)
-  // async signOut(@Res({ passthrough: true }) response: Response) {
-
-  //   response.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
-  //   response.cookie(REFRESH_TOKEN_COOKIE_NAME, '', {
-  //     maxAge: 0,
-  //     httpOnly: true,
-  //   });
-  //   return {
-  //     message: 'Sign out successful',
-  //   };
-  // }
+  @Post('sign-out')
+  @HttpCode(HttpStatus.OK)
+  async signOut(
+    @ActiveUser() user: ActiveUserData,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.signOut(user.sub);
+    response.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
+    response.clearCookie(REFRESH_TOKEN_COOKIE_NAME);
+    return {
+      message: 'Sign out successful',
+    };
+  }
 }
