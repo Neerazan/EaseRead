@@ -43,6 +43,7 @@ export class AuthenticationController {
   @SetAuthCookies()
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
+  @Auth(AuthType.None)
   async refreshToken(@Req() request: Request) {
     const refreshToken = request.signedCookies[REFRESH_TOKEN_COOKIE_NAME];
 
