@@ -31,7 +31,7 @@ export class AuthenticationController {
 
   @Post('sign-in')
   @SetAuthCookies()
-  @Auth(AuthType.None)
+  @Auth(AuthType.Bearer)
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
@@ -46,7 +46,6 @@ export class AuthenticationController {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
-
     return this.authService.refreshToken({ refreshToken });
   }
 
