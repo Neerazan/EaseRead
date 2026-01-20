@@ -5,22 +5,16 @@ import {
   HttpStatus,
   Post,
   Req,
-  Res,
   UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
-import type { ConfigType } from '@nestjs/config';
-import type { Request, Response } from 'express';
-import { CookieOptions } from 'express';
-import appConfig from 'src/config/app.config';
+import type { Request } from 'express';
 import { ActiveUser } from '../decorators/active-user.decorator';
 import type { ActiveUserData } from '../interfaces/action-user-data.interface';
 import { AuthenticationService } from './authentication.service';
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from './constants/auth.constants';
+import { REFRESH_TOKEN_COOKIE_NAME } from './constants/auth.constants';
 import { Auth } from './decorators/auth.decorator';
+import { ClearAuthCookies } from './decorators/clear-auth-cookies.decorator';
 import { SetAuthCookies } from './decorators/set-auth-cookies.decorator';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -30,10 +24,7 @@ import { AuthenticationInterceptor } from './interceptors/authentication.interce
 @UseInterceptors(AuthenticationInterceptor)
 @Controller('auth')
 export class AuthenticationController {
-  constructor(
-    private readonly authService: AuthenticationService,
-    private readonly appConfiguration: ConfigType<typeof appConfig>,
-  ) {}
+  constructor(private readonly authService: AuthenticationService) {}
 
   @Post('sign-up')
   @Auth(AuthType.None)
@@ -63,22 +54,10 @@ export class AuthenticationController {
 
   @Post('sign-out')
   @HttpCode(HttpStatus.OK)
-  async signOut(
-    @ActiveUser() user: ActiveUserData,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  @Auth(AuthType.Bearer)
+  @ClearAuthCookies()
+  async signOut(@ActiveUser() user: ActiveUserData) {
     await this.authService.signOut(user.sub);
-
-    const options: CookieOptions = {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: this.appConfiguration.env === 'production',
-      path: '/',
-      signed: true,
-    };
-
-    response.clearCookie(ACCESS_TOKEN_COOKIE_NAME, options);
-    response.clearCookie(REFRESH_TOKEN_COOKIE_NAME, options);
     return {
       message: 'Sign out successful',
     };
