@@ -9,7 +9,10 @@ import {
   UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
+import type { ConfigType } from '@nestjs/config';
 import type { Request, Response } from 'express';
+import { CookieOptions } from 'express';
+import appConfig from 'src/config/app.config';
 import { ActiveUser } from '../decorators/active-user.decorator';
 import type { ActiveUserData } from '../interfaces/action-user-data.interface';
 import { AuthenticationService } from './authentication.service';
@@ -27,7 +30,10 @@ import { AuthenticationInterceptor } from './interceptors/authentication.interce
 @UseInterceptors(AuthenticationInterceptor)
 @Controller('auth')
 export class AuthenticationController {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly appConfiguration: ConfigType<typeof appConfig>,
+  ) {}
 
   @Post('sign-up')
   @Auth(AuthType.None)
@@ -62,8 +68,17 @@ export class AuthenticationController {
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.authService.signOut(user.sub);
-    response.clearCookie(ACCESS_TOKEN_COOKIE_NAME);
-    response.clearCookie(REFRESH_TOKEN_COOKIE_NAME);
+
+    const options: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: this.appConfiguration.env === 'production',
+      path: '/',
+      signed: true,
+    };
+
+    response.clearCookie(ACCESS_TOKEN_COOKIE_NAME, options);
+    response.clearCookie(REFRESH_TOKEN_COOKIE_NAME, options);
     return {
       message: 'Sign out successful',
     };
