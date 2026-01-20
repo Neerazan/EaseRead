@@ -15,6 +15,8 @@ import { SetAuthCookies } from './decorators/set-auth-cookies.decorator';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { AuthenticationInterceptor } from './interceptors/authentication.interceptor';
+import { Auth } from './decorators/auth.decorator';
+import { AuthType } from './enum/auth-type.enum';
 
 @UseInterceptors(AuthenticationInterceptor)
 @Controller('auth')
@@ -22,12 +24,14 @@ export class AuthenticationController {
   constructor(private readonly authService: AuthenticationService) {}
 
   @Post('sign-up')
+  @Auth(AuthType.None)
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
   }
 
-  @SetAuthCookies()
   @Post('sign-in')
+  @SetAuthCookies()
+  @Auth(AuthType.None)
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
