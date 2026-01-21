@@ -120,5 +120,3 @@ Tracking and metering of AI usage.
 
 3. **Background Processing**:
    - Large book uploads trigger a queue (BullMQ/Redis) to handle chunking and embedding asynchronously, ensuring the UI remains responsive.
-
-![alt text](image.png)
