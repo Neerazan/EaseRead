@@ -46,7 +46,7 @@ Manages authentication, profile, and premium status.
 - **aiQuotaUsed**: `Integer` (Current usage)
 - **createdAt / updatedAt**: `Timestamptz`
 
-### 2. Book
+### 2. Document
 Metadata for uploaded documents.
 - **id**: `UUID` (PK)
 - **userId**: `UUID` (FK -> User)
@@ -57,6 +57,10 @@ Metadata for uploaded documents.
 - **coverUrl**: `String`
 - **isProcessed**: `Boolean` (Vector embedding status)
 - **metadata**: `JSONB` (Chapter count, page count, etc.)
+- **processedAt**: `Timestamptz` (When embedding completed.)
+- **fileSize**: `number` (File size in bytes.)
+- **totalPages**: `number`
+- **worldsCount**: `number` (number of words in document (if counting possible))
 
 ### 3. BookChunk (Vector Support)
 The core of the "AI-Assisted" reading experience.
