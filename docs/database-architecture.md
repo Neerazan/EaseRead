@@ -56,7 +56,7 @@ Metadata for uploaded documents.
 - **fileUrl**: `String` (Storage path)
 - **coverUrl**: `String`
 - **isProcessed**: `Boolean` (Vector embedding status)
-- **uploadedAt**: `TimeStamptz` (document uploded at)
+- **uploadedAt**: `TimeStamptz` (document uploaded at)
 - **metadata**: `JSONB` (Chapter count, page count, etc.)
 - **processedAt**: `Timestamptz` (When embedding completed.)
 - **fileSize**: `number` (File size in bytes.)

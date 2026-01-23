@@ -42,7 +42,13 @@ export class Document extends AbstractTimestampEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any>;
 
-  @Column({ type: 'bigint' })
+  @Column({
+    type: 'bigint',
+    transformer: {
+      to: (value?: number) => value,
+      from: (value: string) => Number(value),
+    },
+  })
   fileSize: number;
 
   @Column({ type: 'int' })
