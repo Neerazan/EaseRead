@@ -26,6 +26,7 @@ import { DatabaseInitializationService } from './database/database-initializatio
 import { IamModule } from './iam/iam.module';
 import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { RedisModule } from './redis/redis.module';
     UserModule,
     LoggerModule,
     RedisModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [
