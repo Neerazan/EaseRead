@@ -21,7 +21,7 @@ export class Document extends AbstractTimestampEntity {
   title: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  author: string;
+  author: string | null;
 
   @Column({
     type: 'enum',
@@ -34,13 +34,13 @@ export class Document extends AbstractTimestampEntity {
   fileUrl: string;
 
   @Column({ type: 'text', nullable: true })
-  coverUrl: string;
+  coverUrl: string | null;
 
   @Column({ type: 'boolean', default: false })
   isProcessed: boolean;
 
   @Column({ type: 'jsonb', nullable: true })
-  metadata: Record<string, any>;
+  metadata: Record<string, any> | null;
 
   @Column({
     type: 'bigint',
@@ -55,8 +55,8 @@ export class Document extends AbstractTimestampEntity {
   totalPages: number;
 
   @Column({ type: 'int', nullable: true })
-  wordsCount: number;
+  wordsCount: number | null;
 
   @Column({ type: 'timestamptz', nullable: true })
-  processedAt: Date;
+  processedAt: Date | null;
 }
