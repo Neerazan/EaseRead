@@ -56,11 +56,12 @@ Metadata for uploaded documents.
 - **fileUrl**: `String` (Storage path)
 - **coverUrl**: `String`
 - **isProcessed**: `Boolean` (Vector embedding status)
+- **uploadedAt**: `TimeStamptz` (document uploaded at)
 - **metadata**: `JSONB` (Chapter count, page count, etc.)
 - **processedAt**: `Timestamptz` (When embedding completed.)
 - **fileSize**: `number` (File size in bytes.)
 - **totalPages**: `number`
-- **worldsCount**: `number` (number of words in document (if counting possible))
+- **wordsCount**: `number` (number of words in document (if counting possible))
 
 ### 3. BookChunk (Vector Support)
 The core of the "AI-Assisted" reading experience.
