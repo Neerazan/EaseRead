@@ -40,6 +40,8 @@ export class User {
   @Column({ type: 'timestamptz', nullable: true })
   lastLoginAt?: Date;
 
+  @Column({ type: 'enum', enum: ['FREE', 'PREMIUM'], default: 'FREE' })
+  tier: 'FREE' | 'PREMIUM';
   /* ---------- Timestamps ---------- */
 
   @CreateDateColumn({ type: 'timestamptz' })
