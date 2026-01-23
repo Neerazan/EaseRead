@@ -1,18 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { AbstractAuditEntity } from 'src/common/entities/base.entity';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Document } from 'src/documents/entities/document.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends AbstractAuditEntity {
   /* ---------- Identity ---------- */
 
   @Index({ unique: true })
@@ -42,14 +33,7 @@ export class User {
 
   @Column({ type: 'enum', enum: ['FREE', 'PREMIUM'], default: 'FREE' })
   tier: 'FREE' | 'PREMIUM';
-  /* ---------- Timestamps ---------- */
 
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamptz' })
-  deletedAt?: Date;
+  @OneToMany(() => Document, (document) => document.user)
+  documents: Document[];
 }
