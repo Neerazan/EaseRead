@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash, randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
@@ -73,6 +77,19 @@ export class DocumentsService {
       where: { userId },
       relations: ['fileContent'],
     });
+  }
+
+  async findOne(id: string, userId: string): Promise<Document> {
+    const document = await this.documentsRepository.findOne({
+      where: { id, userId },
+      relations: ['fileContent'],
+    });
+
+    if (!document) {
+      throw new NotFoundException(`Document with ID ${id} not found`);
+    }
+
+    return document;
   }
 
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {

@@ -4,7 +4,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
+  ParseUUIDPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -55,6 +57,17 @@ export class DocumentsController {
   async getAll(@ActiveUser() user: ActiveUserData) {
     const documents = await this.documentsService.findAll(user.sub);
     return plainToInstance(DocumentResponseDto, documents, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Get(':id')
+  async getOne(
+    @ActiveUser() user: ActiveUserData,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    const document = await this.documentsService.findOne(id, user.sub);
+    return plainToInstance(DocumentResponseDto, document, {
       excludeExtraneousValues: true,
     });
   }
