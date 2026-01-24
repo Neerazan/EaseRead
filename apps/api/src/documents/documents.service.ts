@@ -68,6 +68,13 @@ export class DocumentsService {
     }) as Promise<Document>;
   }
 
+  async findAll(userId: string): Promise<Document[]> {
+    return this.documentsRepository.find({
+      where: { userId },
+      relations: ['fileContent'],
+    });
+  }
+
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {
     switch (mimeType) {
       case 'application/pdf':

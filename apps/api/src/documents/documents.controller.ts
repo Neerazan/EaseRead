@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   ParseFilePipeBuilder,
@@ -46,6 +47,14 @@ export class DocumentsController {
       file,
     );
     return plainToInstance(DocumentResponseDto, document, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Get()
+  async getAll(@ActiveUser() user: ActiveUserData) {
+    const documents = await this.documentsService.findAll(user.sub);
+    return plainToInstance(DocumentResponseDto, documents, {
       excludeExtraneousValues: true,
     });
   }
