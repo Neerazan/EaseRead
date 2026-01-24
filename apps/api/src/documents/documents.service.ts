@@ -103,6 +103,11 @@ export class DocumentsService {
     return this.documentsRepository.save(document);
   }
 
+  async remove(id: string, userId: string): Promise<void> {
+    const document = await this.findOne(id, userId);
+    await this.documentsRepository.remove(document);
+  }
+
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {
     switch (mimeType) {
       case 'application/pdf':

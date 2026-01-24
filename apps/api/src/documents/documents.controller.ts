@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -88,5 +89,14 @@ export class DocumentsController {
     return plainToInstance(DocumentResponseDto, document, {
       excludeExtraneousValues: true,
     });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
+    @ActiveUser() user: ActiveUserData,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.documentsService.remove(id, user.sub);
   }
 }
