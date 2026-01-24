@@ -51,8 +51,8 @@ export class Document extends AbstractTimestampEntity {
   })
   fileSize: number;
 
-  @Column({ type: 'int' })
-  totalPages: number;
+  @Column({ type: 'int', nullable: true })
+  totalPages: number | null;
 
   @Column({ type: 'int', nullable: true })
   wordsCount: number | null;
