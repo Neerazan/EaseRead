@@ -1,17 +1,21 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomUUID } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Repository } from 'typeorm';
 import { CreateDocumentDto } from './dto/create-document.dto';
-import { Document, DocumentFormat } from './entities/document.entity';
+import { Document } from './entities/document.entity';
+import { FileContent } from './entities/file-content.entity';
+import { DocumentFormat } from './enum/document-format.enum';
 
 @Injectable()
 export class DocumentsService {
   constructor(
     @InjectRepository(Document)
     private readonly documentsRepository: Repository<Document>,
+    @InjectRepository(FileContent)
+    private readonly fileContentRepository: Repository<FileContent>,
   ) {}
 
   async create(
@@ -19,22 +23,49 @@ export class DocumentsService {
     createDocumentDto: CreateDocumentDto,
     file: Express.Multer.File,
   ): Promise<Document> {
-    const format = this.mapMimeTypeToFormat(file.mimetype);
+    const hash = createHash('sha256').update(file.buffer).digest('hex');
+    let fileContent = await this.fileContentRepository.findOneBy({ hash });
 
-    const fileUrl = await this.uploadToLocal(file);
+    if (!fileContent) {
+      const format = this.mapMimeTypeToFormat(file.mimetype);
+      const fileUrl = await this.uploadToLocal(file);
+
+      fileContent = this.fileContentRepository.create({
+        hash,
+        fileUrl,
+        format,
+        fileSize: file.size,
+        isProcessed: false,
+      });
+      await this.fileContentRepository.save(fileContent);
+    }
+
+    const existingDocument = await this.documentsRepository.findOne({
+      where: {
+        userId,
+        fileContentHash: fileContent.hash,
+      },
+      relations: ['fileContent'],
+    });
+
+    if (existingDocument) {
+      return existingDocument;
+    }
 
     const document = this.documentsRepository.create({
       ...createDocumentDto,
       title: createDocumentDto.title || file.originalname,
       author: createDocumentDto.author || null,
       userId,
-      format,
-      fileUrl,
-      fileSize: file.size,
-      isProcessed: false,
+      fileContentHash: fileContent.hash,
     });
 
-    return this.documentsRepository.save(document);
+    const savedDocument = await this.documentsRepository.save(document);
+
+    return this.documentsRepository.findOne({
+      where: { id: savedDocument.id },
+      relations: ['fileContent'],
+    }) as Promise<Document>;
   }
 
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {
@@ -53,7 +84,6 @@ export class DocumentsService {
   private async uploadToLocal(file: Express.Multer.File): Promise<string> {
     try {
       const uploadDir = path.join(process.cwd(), 'uploads');
-
       await fs.mkdir(uploadDir, { recursive: true });
 
       const fileExt = path.extname(file.originalname);

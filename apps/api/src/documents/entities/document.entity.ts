@@ -1,14 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { AbstractTimestampEntity } from '../../common/entities/base.entity';
 import { User } from 'src/user/entities/user.entity';
-
-export enum DocumentFormat {
-  EPUB = 'epub',
-  PDF = 'pdf',
-  TXT = 'txt',
-}
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
+import { AbstractTimestampEntity } from '../../common/entities/base.entity';
+import { FileContent } from './file-content.entity';
 
 @Entity()
+@Unique(['userId', 'fileContentHash'])
 export class Document extends AbstractTimestampEntity {
   @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
@@ -23,40 +19,13 @@ export class Document extends AbstractTimestampEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   author: string | null;
 
-  @Column({
-    type: 'enum',
-    enum: DocumentFormat,
-    default: DocumentFormat.PDF,
-  })
-  format: DocumentFormat;
-
-  @Column({ type: 'text' })
-  fileUrl: string;
-
   @Column({ type: 'text', nullable: true })
   coverUrl: string | null;
 
-  @Column({ type: 'boolean', default: false })
-  isProcessed: boolean;
+  @Column({ type: 'varchar', length: 64 })
+  fileContentHash: string;
 
-  @Column({ type: 'jsonb', nullable: true })
-  metadata: Record<string, any> | null;
-
-  @Column({
-    type: 'bigint',
-    transformer: {
-      to: (value?: number) => value,
-      from: (value: string) => Number(value),
-    },
-  })
-  fileSize: number;
-
-  @Column({ type: 'int', nullable: true })
-  totalPages: number | null;
-
-  @Column({ type: 'int', nullable: true })
-  wordsCount: number | null;
-
-  @Column({ type: 'timestamptz', nullable: true })
-  processedAt: Date | null;
+  @ManyToOne(() => FileContent, (fileContent) => fileContent.documents)
+  @JoinColumn({ name: 'fileContentHash', referencedColumnName: 'hash' })
+  fileContent: FileContent;
 }

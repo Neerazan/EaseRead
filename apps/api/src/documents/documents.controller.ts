@@ -9,10 +9,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { plainToInstance } from 'class-transformer';
 import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
 import type { ActiveUserData } from 'src/iam/interfaces/action-user-data.interface';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
+import { DocumentResponseDto } from './dto/document-response.dto';
 
 @Controller('documents')
 export class DocumentsController {
@@ -38,6 +40,13 @@ export class DocumentsController {
     )
     file: Express.Multer.File,
   ) {
-    return this.documentsService.create(user.sub, createDocumentDto, file);
+    const document = await this.documentsService.create(
+      user.sub,
+      createDocumentDto,
+      file,
+    );
+    return plainToInstance(DocumentResponseDto, document, {
+      excludeExtraneousValues: true,
+    });
   }
 }
