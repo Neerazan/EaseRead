@@ -18,7 +18,8 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - db_data:/var/lib/redis/data
+      - redis_data:/var/lib/redis/data
 
 volumes:
   db_data:
+  redis_data:
