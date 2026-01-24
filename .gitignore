@@ -54,6 +54,7 @@ test-results/
 # Misc
 *.tsbuildinfo
 .turbo/
+uploads/
 
 # Deployment & Local Overrides
 .vercel/
