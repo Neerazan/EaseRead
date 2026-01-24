@@ -7,6 +7,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   ParseUUIDPipe,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -18,6 +19,7 @@ import type { ActiveUserData } from 'src/iam/interfaces/action-user-data.interfa
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { DocumentResponseDto } from './dto/document-response.dto';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('documents')
 export class DocumentsController {
@@ -67,6 +69,22 @@ export class DocumentsController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     const document = await this.documentsService.findOne(id, user.sub);
+    return plainToInstance(DocumentResponseDto, document, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Patch(':id')
+  async update(
+    @ActiveUser() user: ActiveUserData,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateDocumentDto: UpdateDocumentDto,
+  ) {
+    const document = await this.documentsService.update(
+      id,
+      user.sub,
+      updateDocumentDto,
+    );
     return plainToInstance(DocumentResponseDto, document, {
       excludeExtraneousValues: true,
     });

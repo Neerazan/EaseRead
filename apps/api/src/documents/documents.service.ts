@@ -9,6 +9,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Repository } from 'typeorm';
 import { CreateDocumentDto } from './dto/create-document.dto';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 import { Document } from './entities/document.entity';
 import { FileContent } from './entities/file-content.entity';
 import { DocumentFormat } from './enum/document-format.enum';
@@ -90,6 +91,16 @@ export class DocumentsService {
     }
 
     return document;
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    updateDocumentDto: UpdateDocumentDto,
+  ): Promise<Document> {
+    const document = await this.findOne(id, userId);
+    Object.assign(document, updateDocumentDto);
+    return this.documentsRepository.save(document);
   }
 
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {
