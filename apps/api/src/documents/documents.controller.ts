@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import type { ActiveUserData } from 'src/iam/interfaces/action-user-data.interfa
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { DocumentResponseDto } from './dto/document-response.dto';
+import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('documents')
@@ -57,8 +59,11 @@ export class DocumentsController {
   }
 
   @Get()
-  async getAll(@ActiveUser() user: ActiveUserData) {
-    const documents = await this.documentsService.findAll(user.sub);
+  async getAll(
+    @ActiveUser() user: ActiveUserData,
+    @Query() query: GetDocumentsQueryDto,
+  ) {
+    const documents = await this.documentsService.findAll(user.sub, query);
     return plainToInstance(DocumentResponseDto, documents, {
       excludeExtraneousValues: true,
     });

@@ -9,6 +9,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Repository } from 'typeorm';
 import { CreateDocumentDto } from './dto/create-document.dto';
+import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { Document } from './entities/document.entity';
 import { FileContent } from './entities/file-content.entity';
@@ -73,11 +74,35 @@ export class DocumentsService {
     }) as Promise<Document>;
   }
 
-  async findAll(userId: string): Promise<Document[]> {
-    return this.documentsRepository.find({
-      where: { userId },
-      relations: ['fileContent'],
-    });
+  async findAll(
+    userId: string,
+    query: GetDocumentsQueryDto,
+  ): Promise<Document[]> {
+    const { search, page = 1, limit = 10 } = query;
+
+    const queryBuilder = this.documentsRepository
+      .createQueryBuilder('document')
+      .leftJoinAndSelect('document.fileContent', 'fileContent')
+      .where('document.userId = :userId', { userId });
+
+    if (search) {
+      // Professional Postgres FTS logic:
+      // 1. Combine title and author into a search vector
+      // 2. Use plainto_tsquery for the search term (safe against special chars)
+      // 3. Match using the @@ operator
+      queryBuilder.andWhere(
+        "to_tsvector('english', document.title || ' ' || COALESCE(document.author, '')) @@ plainto_tsquery('english', :search)",
+        { search },
+      );
+    }
+
+    // Apply pagination
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    // Default sort by creation date
+    queryBuilder.orderBy('document.createdAt', 'DESC');
+
+    return queryBuilder.getMany();
   }
 
   async findOne(id: string, userId: string): Promise<Document> {
