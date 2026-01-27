@@ -69,9 +69,13 @@ export class AuthenticationInterceptor implements NestInterceptor {
         }
 
         const { accessToken, refreshToken, ...rest } = data;
-
         response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, options);
         response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, options);
+
+        // it is only for develpment, to use swagger documentation.
+        if (this.appConfiguration.env === 'development') {
+          return data;
+        }
 
         return {
           ...rest,

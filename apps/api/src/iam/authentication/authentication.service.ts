@@ -68,6 +68,7 @@ export class AuthenticationService {
       password,
       user.passwordHash,
     );
+
     if (!isCorrect) {
       throw new UnauthorizedException('Invalid email or password.');
     }

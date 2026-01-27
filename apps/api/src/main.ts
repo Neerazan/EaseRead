@@ -1,9 +1,9 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationError } from 'class-validator';
 import cookieParser from 'cookie-parser';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors';
@@ -78,6 +78,8 @@ async function bootstrap() {
     .setDescription('All Rest APIs related to our easeread app')
     .setVersion('1.0')
     .addTag('EaseRead')
+    .addBearerAuth()
+    .addSecurityRequirements('bearer')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
