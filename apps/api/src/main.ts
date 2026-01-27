@@ -3,6 +3,7 @@ import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors';
@@ -10,17 +11,12 @@ import { ValidationErrorDetail } from './common/interfaces';
 import { LoggerService } from './common/logger';
 import appConfig from './config/app.config';
 
-/**
- * Recursively extracts validation error messages from nested ValidationError objects.
- * Handles both flat and nested DTO validation scenarios.
- */
 function extractValidationErrors(
   errors: ValidationError[],
 ): ValidationErrorDetail[] {
   const result: ValidationErrorDetail[] = [];
 
   for (const error of errors) {
-    // Handle direct constraint violations
     if (error.constraints) {
       const messages = Object.values(error.constraints);
       for (const message of messages) {
@@ -75,8 +71,17 @@ async function bootstrap() {
     }),
   );
 
-  // Global interceptor for consistent success response format and logging
   app.useGlobalInterceptors(new ResponseInterceptor(logger));
+
+  const config = new DocumentBuilder()
+    .setTitle('EaseRead APIs')
+    .setDescription('All Rest APIs related to our easeread app')
+    .setVersion('1.0')
+    .addTag('EaseRead')
+    .build();
+
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
