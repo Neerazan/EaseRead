@@ -4,11 +4,7 @@ export class InitialSchema1769526742210 implements MigrationInterface {
   name = 'InitialSchema1769526742210';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Ensure extensions are enabled
-    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
-    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "citext"`);
-    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "vector"`);
-
+    // Create "document_chunk" table
     await queryRunner.query(
       `CREATE TABLE "document_chunk" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "content" text NOT NULL, "embedding" vector(1536), "tokenCount" integer, "chapterTitle" character varying, "pageNumber" integer, "startOffset" integer, "endOffset" integer, "index" integer NOT NULL, "documentId" uuid NOT NULL, CONSTRAINT "PK_70d9772bf367d82f9b7e568c87c" PRIMARY KEY ("id"))`,
     );
