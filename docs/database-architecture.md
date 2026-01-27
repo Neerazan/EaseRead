@@ -22,12 +22,12 @@ erDiagram
     USER ||--o{ READING_PROGRESS : tracks
     USER ||--o{ AI_INTERACTION : performs
     
-    BOOK ||--o{ BOOK_CHUNK : contains
+    BOOK ||--o{ DOCUMENT_CHUNK : contains
     BOOK ||--o{ READING_PROGRESS : has
     BOOK ||--o{ VOCABULARY : referenced_in
     BOOK ||--o{ SAVED_PHRASE : referenced_in
 
-    BOOK_CHUNK ||--o{ AI_INTERACTION : source_context
+    DOCUMENT_CHUNK ||--o{ AI_INTERACTION : source_context
 ```
 
 ---
@@ -63,14 +63,18 @@ Metadata for uploaded documents.
 - **totalPages**: `number`
 - **wordsCount**: `number` (number of words in document (if counting possible))
 
-### 3. BookChunk (Vector Support)
+### 3. DocumentChunk (Vector Support)
 The core of the "AI-Assisted" reading experience.
 - **id**: `UUID` (PK)
-- **bookId**: `UUID` (FK -> Book)
+- **documentId**: `UUID` (FK -> Document/Book)
 - **content**: `Text`
 - **embedding**: `Vector(1536)` (Calculated via OpenAI/Local model)
 - **index**: `Integer` (Sequential ordering)
-- **metadata**: `JSONB` (Page/Chapter reference)
+- **tokenCount**: `Integer` (Nullable, token budget management)
+- **chapterTitle**: `varchar` (Nullable)
+- **pageNumber**: `Integer` (Nullable)
+- **startOffset**: `Integer` (Nullable)
+- **endOffset**: `Integer` (Nullable)
 
 ### 4. Reading Progress
 Tracks the current position in a book.
