@@ -23,10 +23,10 @@ import { configs } from './config';
 import databaseConfig from './config/database.config';
 import { validationSchema } from './config/validation.schema';
 import { DatabaseInitializationService } from './database/database-initialization.service';
-import { IamModule } from './iam/iam.module';
-import { UserModule } from './user/user.module';
-import { RedisModule } from './redis/redis.module';
 import { DocumentsModule } from './documents/documents.module';
+import { IamModule } from './iam/iam.module';
+import { RedisModule } from './redis/redis.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -50,6 +50,8 @@ import { DocumentsModule } from './documents/documents.module';
           database: db?.database,
           autoLoadEntities: db?.autoLoadEntities,
           synchronize: db?.synchronize,
+          migrationsRun: db?.migrationsRun,
+          migrations: [__dirname + '/database/migrations/*.{ts,js}'],
         };
       },
       inject: [ConfigService],

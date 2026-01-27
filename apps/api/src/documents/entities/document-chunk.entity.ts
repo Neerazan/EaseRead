@@ -7,26 +7,23 @@ export class DocumentChunk extends AbstractTimestampEntity {
   @Column({ type: 'text' })
   content: string;
 
-  // Assuming 1536 dimensions for OpenAI embeddings.
-  // Note: The database must have the pgvector extension enabled.
-  @Column({ type: 'vector', nullable: true })
-  @Index({ spatial: true }) // Optional: Add HNSW index if needed immediately, but usually added via migration
-  embedding: number[];
+  @Column({ type: 'vector', length: 1536, nullable: true })
+  embedding: number[] | null;
 
   @Column({ type: 'int', nullable: true })
-  tokenCount: number;
+  tokenCount: number | null;
 
   @Column({ type: 'varchar', nullable: true })
-  chapterTitle: string;
+  chapterTitle: string | null;
 
   @Column({ type: 'int', nullable: true })
-  pageNumber: number;
+  pageNumber: number | null;
 
   @Column({ type: 'int', nullable: true })
-  startOffset: number;
+  startOffset: number | null;
 
   @Column({ type: 'int', nullable: true })
-  endOffset: number;
+  endOffset: number | null;
 
   @Column({ type: 'int' })
   index: number;

@@ -21,6 +21,11 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f",
+    "db:migrate:generate": "yarn workspace @easeread/api migration:generate",
+    "db:migrate:run": "yarn workspace @easeread/api migration:run",
+    "db:migrate:revert": "yarn workspace @easeread/api migration:revert",
+    "db:migrate:show": "yarn workspace @easeread/api migration:show",
+    "db:migrate:create": "yarn workspace @easeread/api migration:create",
     "prepare": "husky"
   },
   "lint-staged": {
