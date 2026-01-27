@@ -41,7 +41,7 @@ export class AccessTokenGuard implements CanActivate {
 
   private extractToken(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type?.toLowerCase() === 'Bearer') {
+    if (type?.toLowerCase() === 'bearer') {
       return token;
     }
     return request.signedCookies?.[ACCESS_TOKEN_COOKIE_NAME];
