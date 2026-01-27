@@ -23,20 +23,27 @@ export class AccessTokenGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromCookie(request);
-    const payload = await this.jwtService.verifyAsync(
-      token,
-      this.jwtConfiguration,
-    );
-    request[REQUEST_USER_KEY] = payload;
+    const token = this.extractToken(request);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    try {
+      const payload = await this.jwtService.verifyAsync(
+        token,
+        this.jwtConfiguration,
+      );
+      request[REQUEST_USER_KEY] = payload;
+    } catch {
+      throw new UnauthorizedException();
+    }
     return true;
   }
 
-  private extractTokenFromCookie(request: Request) {
-    const token = request.signedCookies[ACCESS_TOKEN_COOKIE_NAME];
-    if (!token) {
-      throw new UnauthorizedException('Invalid authentication token!');
+  private extractToken(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    if (type?.toLowerCase() === 'bearer') {
+      return token;
     }
-    return token;
+    return request.signedCookies?.[ACCESS_TOKEN_COOKIE_NAME];
   }
 }

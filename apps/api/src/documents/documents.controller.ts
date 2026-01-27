@@ -15,6 +15,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
 import type { ActiveUserData } from 'src/iam/interfaces/action-user-data.interface';
@@ -24,11 +25,16 @@ import { DocumentResponseDto } from './dto/document-response.dto';
 import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 
+@ApiTags('Documents')
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: CreateDocumentDto,
+  })
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(HttpStatus.CREATED)
   async upload(
