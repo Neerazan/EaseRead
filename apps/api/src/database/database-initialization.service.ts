@@ -9,5 +9,6 @@ export class DatabaseInitializationService implements OnModuleInit {
     // This creates the citext extension if it doesn't already exist
     // so that case-insensitive columns work correctly.
     await this.dataSource.query('CREATE EXTENSION IF NOT EXISTS citext');
+    await this.dataSource.query('CREATE EXTENSION IF NOT EXISTS "vector"');
   }
 }
