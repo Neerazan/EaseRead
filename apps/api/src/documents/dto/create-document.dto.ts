@@ -5,7 +5,7 @@ export class CreateDocumentDto {
   @ApiProperty({
     description: 'The title of the document',
     required: false,
-    example: 'The Great Gatsby',
+    example: '',
   })
   @IsString()
   @IsOptional()
@@ -15,7 +15,7 @@ export class CreateDocumentDto {
   @ApiProperty({
     description: 'The author of the document',
     required: false,
-    example: 'F. Scott Fitzgerald',
+    example: '',
   })
   @IsString()
   @IsOptional()
@@ -28,5 +28,5 @@ export class CreateDocumentDto {
     description: 'The file to upload',
   })
   @IsOptional()
-  file: any;
+  readonly file: Express.Multer.File;
 }
