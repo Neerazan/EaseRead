@@ -1,6 +1,14 @@
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  Unique,
+} from 'typeorm';
 import { AbstractTimestampEntity } from '../../common/entities/base.entity';
+import { DocumentChunk } from './document-chunk.entity';
 import { FileContent } from './file-content.entity';
 
 @Entity()
@@ -28,4 +36,7 @@ export class Document extends AbstractTimestampEntity {
   @ManyToOne(() => FileContent, (fileContent) => fileContent.documents)
   @JoinColumn({ name: 'fileContentHash', referencedColumnName: 'hash' })
   fileContent: FileContent;
+
+  @OneToMany(() => DocumentChunk, (chunk) => chunk.document)
+  chunks: DocumentChunk[];
 }
