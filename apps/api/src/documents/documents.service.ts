@@ -1,13 +1,16 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
 import { createHash, randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Repository } from 'typeorm';
+import { CLEANUP_QUEUE, CleanupJob } from '../queue/queue.constants';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
@@ -22,6 +25,8 @@ export class DocumentsService {
     private readonly documentsRepository: Repository<Document>,
     @InjectRepository(FileContent)
     private readonly fileContentRepository: Repository<FileContent>,
+    @InjectQueue(CLEANUP_QUEUE)
+    private readonly cleanupQueue: Queue,
   ) {}
 
   async create(
@@ -130,7 +135,13 @@ export class DocumentsService {
 
   async remove(id: string, userId: string): Promise<void> {
     const document = await this.findOne(id, userId);
+    const { fileContentHash } = document;
+
     await this.documentsRepository.remove(document);
+
+    await this.cleanupQueue.add(CleanupJob.CLEANUP_FILE, {
+      fileContentHash,
+    });
   }
 
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {

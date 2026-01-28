@@ -25,6 +25,7 @@ import { validationSchema } from './config/validation.schema';
 import { DatabaseInitializationService } from './database/database-initialization.service';
 import { DocumentsModule } from './documents/documents.module';
 import { IamModule } from './iam/iam.module';
+import { QueueModule } from './queue/queue.module';
 import { RedisModule } from './redis/redis.module';
 import { UserModule } from './user/user.module';
 
@@ -62,6 +63,7 @@ import { UserModule } from './user/user.module';
     LoggerModule,
     RedisModule,
     DocumentsModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [
