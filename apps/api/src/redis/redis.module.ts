@@ -1,11 +1,10 @@
 import { Inject, Module, OnApplicationShutdown } from '@nestjs/common';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { Redis } from 'ioredis';
-import redisConfig from './config/redis.config';
+import redisConfig from '../config/redis.config';
 import { REDIS_CLIENT } from './redis.constants';
 
 @Module({
-  imports: [ConfigModule.forFeature(redisConfig)],
   providers: [
     {
       provide: REDIS_CLIENT,
