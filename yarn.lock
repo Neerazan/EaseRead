@@ -509,6 +509,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@easeread/ai-worker@workspace:apps/ai-worker":
+  version: 0.0.0-use.local
+  resolution: "@easeread/ai-worker@workspace:apps/ai-worker"
+  languageName: unknown
+  linkType: soft
+
 "@easeread/api@workspace:apps/api":
   version: 0.0.0-use.local
   resolution: "@easeread/api@workspace:apps/api"
