@@ -2,9 +2,11 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from bullmq import Worker
+from pathlib import Path
 
 # Load environment variables (from your root .env)
-load_dotenv(dotenv_path="../../.env")
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(dotenv_path=ROOT_DIR/ ".env")
 
 
 async def process_document(job, job_token):
