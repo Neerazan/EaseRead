@@ -33,7 +33,6 @@ export class FileCleanupProcessor extends WorkerHost {
   private async handleFileCleanup(fileContentHash: string) {
     this.logger.log(`Starting cleanup check for hash: ${fileContentHash}`);
 
-    // Check if any documents still reference this file content
     const documentCount = await this.documentsRepository.count({
       where: { fileContentHash },
     });
@@ -45,7 +44,6 @@ export class FileCleanupProcessor extends WorkerHost {
       return;
     }
 
-    // No documents left, find the file content record
     const fileContent = await this.fileContentRepository.findOneBy({
       hash: fileContentHash,
     });
@@ -57,7 +55,6 @@ export class FileCleanupProcessor extends WorkerHost {
       return;
     }
 
-    // Delete physical file
     try {
       await fs.access(fileContent.fileUrl);
       await fs.unlink(fileContent.fileUrl);

@@ -7,12 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "yarn workspaces foreach -Ap --include '@easeread/web' --include '@easeread/api' run dev",
+    "dev": "yarn workspaces foreach -Ap --include '@easeread/web' --include '@easeread/api' --include '@easeread/ai-worker' run dev",
     "dev:web": "yarn workspace @easeread/web dev",
     "dev:api": "yarn workspace @easeread/api start:dev",
+    "dev:ai": "yarn workspace @easeread/ai-worker dev",
     "build": "yarn workspaces foreach -Ap run build",
     "build:web": "yarn workspace @easeread/web build",
     "build:api": "yarn workspace @easeread/api build",
+    "build:ai": "yarn workspace @easeread/ai-worker run dev",
     "lint": "yarn workspaces foreach -Ap run lint",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
