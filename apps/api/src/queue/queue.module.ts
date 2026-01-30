@@ -6,7 +6,7 @@ import redisConfig from '../config/redis.config';
 import { Document } from '../documents/entities/document.entity';
 import { FileContent } from '../documents/entities/file-content.entity';
 import { FileCleanupProcessor } from './processors/file-cleanup.processor';
-import { CLEANUP_QUEUE } from './queue.constants';
+import { CLEANUP_QUEUE, DOCUMENT_PROCESSING_QUEUE } from './queue.constants';
 
 @Module({
   imports: [
@@ -23,9 +23,14 @@ import { CLEANUP_QUEUE } from './queue.constants';
       },
       inject: [ConfigService],
     }),
-    BullModule.registerQueue({
-      name: CLEANUP_QUEUE,
-    }),
+    BullModule.registerQueue(
+      {
+        name: CLEANUP_QUEUE,
+      },
+      {
+        name: DOCUMENT_PROCESSING_QUEUE,
+      },
+    ),
     TypeOrmModule.forFeature([Document, FileContent]),
   ],
   providers: [FileCleanupProcessor],

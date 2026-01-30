@@ -10,7 +10,12 @@ import { createHash, randomUUID } from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Repository } from 'typeorm';
-import { CLEANUP_QUEUE, CleanupJob } from '../queue/queue.constants';
+import {
+  CLEANUP_QUEUE,
+  CleanupJob,
+  DOCUMENT_PROCESSING_QUEUE,
+  DocumentProcessingJob,
+} from '../queue/queue.constants';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
@@ -27,6 +32,8 @@ export class DocumentsService {
     private readonly fileContentRepository: Repository<FileContent>,
     @InjectQueue(CLEANUP_QUEUE)
     private readonly cleanupQueue: Queue,
+    @InjectQueue(DOCUMENT_PROCESSING_QUEUE)
+    private readonly documentProcessingQueue: Queue,
   ) {}
 
   async create(
@@ -72,6 +79,16 @@ export class DocumentsService {
     });
 
     const savedDocument = await this.documentsRepository.save(document);
+
+    await this.documentProcessingQueue.add(
+      DocumentProcessingJob.PROCESS_DOCUMENT,
+      {
+        documentId: savedDocument.id,
+        fileUrl: fileContent.fileUrl,
+        userId,
+        format: fileContent.format,
+      },
+    );
 
     return this.documentsRepository.findOne({
       where: { id: savedDocument.id },

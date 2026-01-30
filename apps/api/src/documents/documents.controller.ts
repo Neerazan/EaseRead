@@ -59,6 +59,7 @@ export class DocumentsController {
       createDocumentDto,
       file,
     );
+
     return plainToInstance(DocumentResponseDto, document, {
       excludeExtraneousValues: true,
     });
