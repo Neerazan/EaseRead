@@ -18,6 +18,10 @@ import { CLEANUP_QUEUE, DOCUMENT_PROCESSING_QUEUE } from './queue.constants';
           connection: {
             host: redis?.host,
             port: redis?.port,
+            maxRetriesPerRequest: null,
+            enableOfflineQueue: false,
+            connectTimeout: 5000,
+            retryStrategy: () => null,
           },
         };
       },
