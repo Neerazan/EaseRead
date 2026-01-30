@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,6 +26,8 @@ import { DocumentFormat } from './enum/document-format.enum';
 
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger(DocumentsService.name);
+
   constructor(
     @InjectRepository(Document)
     private readonly documentsRepository: Repository<Document>,
@@ -42,58 +45,73 @@ export class DocumentsService {
     file: Express.Multer.File,
   ): Promise<Document> {
     const hash = createHash('sha256').update(file.buffer).digest('hex');
-    let fileContent = await this.fileContentRepository.findOneBy({ hash });
 
-    if (!fileContent) {
-      const format = this.mapMimeTypeToFormat(file.mimetype);
-      const fileUrl = await this.uploadToLocal(file);
+    return await this.documentsRepository.manager.transaction(
+      async (manager) => {
+        let fileContent = await manager.findOneBy(FileContent, { hash });
 
-      fileContent = this.fileContentRepository.create({
-        hash,
-        fileUrl,
-        format,
-        fileSize: file.size,
-        isProcessed: false,
-      });
-      await this.fileContentRepository.save(fileContent);
-    }
+        if (!fileContent) {
+          const format = this.mapMimeTypeToFormat(file.mimetype);
+          const fileUrl = await this.uploadToLocal(file);
 
-    const existingDocument = await this.documentsRepository.findOne({
-      where: {
-        userId,
-        fileContentHash: fileContent.hash,
-      },
-      relations: ['fileContent'],
-    });
+          fileContent = manager.create(FileContent, {
+            hash,
+            fileUrl,
+            format,
+            fileSize: file.size,
+            isProcessed: false,
+          });
+          await manager.save(FileContent, fileContent);
+        }
 
-    if (existingDocument) {
-      return existingDocument;
-    }
+        const existingDocument = await manager.findOne(Document, {
+          where: {
+            userId,
+            fileContentHash: fileContent.hash,
+          },
+          relations: ['fileContent'],
+        });
 
-    const document = this.documentsRepository.create({
-      ...createDocumentDto,
-      title: createDocumentDto.title || file.originalname,
-      author: createDocumentDto.author || null,
-      userId,
-      fileContentHash: fileContent.hash,
-    });
+        if (existingDocument) {
+          return existingDocument;
+        }
 
-    const savedDocument = await this.documentsRepository.save(document);
+        const document = manager.create(Document, {
+          ...createDocumentDto,
+          title: createDocumentDto.title || file.originalname,
+          author: createDocumentDto.author || null,
+          userId,
+          fileContentHash: fileContent.hash,
+        });
 
-    await this.documentProcessingQueue.add(
-      DocumentProcessingJob.PROCESS_DOCUMENT,
-      {
-        documentId: savedDocument.id,
-        fileUrl: fileContent.fileUrl,
-        userId,
-        format: fileContent.format,
+        const savedDocument = await manager.save(Document, document);
+
+        try {
+          await this.documentProcessingQueue.add(
+            DocumentProcessingJob.PROCESS_DOCUMENT,
+            {
+              documentId: savedDocument.id,
+              fileUrl: fileContent.fileUrl,
+              userId,
+              format: fileContent.format,
+            },
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to add document to processing queue: ${error.message}`,
+            error.stack,
+          );
+          throw new InternalServerErrorException(
+            'Failed to start document processing. Please try again later.',
+          );
+        }
+
+        return (await manager.findOne(Document, {
+          where: { id: savedDocument.id },
+          relations: ['fileContent'],
+        })) as Document;
       },
     );
-
-    return this.documentsRepository.findOne({
-      where: { id: savedDocument.id },
-      relations: ['fileContent'],
-    }) as Promise<Document>;
   }
 
   async findAll(

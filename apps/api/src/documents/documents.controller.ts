@@ -60,9 +60,13 @@ export class DocumentsController {
       file,
     );
 
-    return plainToInstance(DocumentResponseDto, document, {
-      excludeExtraneousValues: true,
-    });
+    return {
+      message:
+        'Document uploaded successfully! We are now processing it, it may take few minutes.',
+      data: plainToInstance(DocumentResponseDto, document, {
+        excludeExtraneousValues: true,
+      }),
+    };
   }
 
   @Get()
