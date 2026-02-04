@@ -76,6 +76,18 @@ export class DocumentsService {
               isProcessed: false,
             });
             await manager.save(FileContent, fileContent);
+          } else {
+            // Race condition handled: Another request created the FileContent while we were uploading.
+            // We should use the existing one and cleanup the file we just uploaded to avoid orphans.
+            if (fileUrl && fileUrl !== fileContent.fileUrl) {
+              await fs
+                .unlink(fileUrl)
+                .catch((e) =>
+                  this.logger.warn(
+                    `Failed to cleanup redundant file upload: ${e.message}`,
+                  ),
+                );
+            }
           }
 
           const existingDocument = await manager.findOne(Document, {
@@ -118,7 +130,6 @@ export class DocumentsService {
 
     try {
       if (!savedDocument.fileContent.isProcessed) {
-        console.log('This is inside documen service queue.');
         await this.documentProcessingQueue.add(
           DocumentProcessingJob.PROCESS_DOCUMENT,
           {
