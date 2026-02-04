@@ -23,7 +23,7 @@ async def start_worker():
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
 
     # Connect to the EXACT same queue name as NestJS
-    worker = Worker("document-processing", process_document, {"connection": redis_url})
+    worker = Worker("document-processor", process_document, {"connection": redis_url})
 
     print(f"🚀 Python Worker started! Listening on queue: document-processing")
 
