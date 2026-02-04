@@ -45,73 +45,102 @@ export class DocumentsService {
     file: Express.Multer.File,
   ): Promise<Document> {
     const hash = createHash('sha256').update(file.buffer).digest('hex');
+    let fileUrl: string | null = null;
+    let format: DocumentFormat = DocumentFormat.PDF;
 
-    return await this.documentsRepository.manager.transaction(
-      async (manager) => {
-        let fileContent = await manager.findOneBy(FileContent, { hash });
+    const existingFileContent = await this.fileContentRepository.findOneBy({
+      hash,
+    });
 
-        if (!fileContent) {
-          const format = this.mapMimeTypeToFormat(file.mimetype);
-          const fileUrl = await this.uploadToLocal(file);
+    if (!existingFileContent) {
+      format = this.mapMimeTypeToFormat(file.mimetype);
+      fileUrl = await this.uploadToLocal(file);
+    } else {
+      fileUrl = existingFileContent.fileUrl;
+      format = existingFileContent.format;
+    }
 
-          fileContent = manager.create(FileContent, {
-            hash,
-            fileUrl,
-            format,
-            fileSize: file.size,
-            isProcessed: false,
+    let savedDocument: Document;
+
+    try {
+      savedDocument = await this.documentsRepository.manager.transaction(
+        async (manager) => {
+          let fileContent = await manager.findOneBy(FileContent, { hash });
+
+          if (!fileContent) {
+            fileContent = manager.create(FileContent, {
+              hash,
+              fileUrl: fileUrl!,
+              format,
+              fileSize: file.size,
+              isProcessed: false,
+            });
+            await manager.save(FileContent, fileContent);
+          }
+
+          const existingDocument = await manager.findOne(Document, {
+            where: {
+              userId,
+              fileContentHash: fileContent.hash,
+            },
+            relations: ['fileContent'],
           });
-          await manager.save(FileContent, fileContent);
-        }
 
-        const existingDocument = await manager.findOne(Document, {
-          where: {
+          if (existingDocument) {
+            return existingDocument;
+          }
+
+          const document = manager.create(Document, {
+            ...createDocumentDto,
+            title: createDocumentDto.title || file.originalname,
+            author: createDocumentDto.author || null,
             userId,
             fileContentHash: fileContent.hash,
+          });
+
+          const saved = await manager.save(Document, document);
+          return (await manager.findOne(Document, {
+            where: { id: saved.id },
+            relations: ['fileContent'],
+          })) as Document;
+        },
+      );
+    } catch (error) {
+      if (!existingFileContent && fileUrl) {
+        await fs
+          .unlink(fileUrl)
+          .catch((e) =>
+            this.logger.warn(`Failed to cleanup orphaned file: ${e.message}`),
+          );
+      }
+      throw error;
+    }
+
+    try {
+      if (!savedDocument.fileContent.isProcessed) {
+        console.log('This is inside documen service queue.');
+        await this.documentProcessingQueue.add(
+          DocumentProcessingJob.PROCESS_DOCUMENT,
+          {
+            documentId: savedDocument.id,
+            fileUrl: savedDocument.fileContent.fileUrl,
+            userId,
+            format: savedDocument.fileContent.format,
           },
-          relations: ['fileContent'],
-        });
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue document ${savedDocument.id} for processing: ${error.message}`,
+        error.stack,
+      );
 
-        if (existingDocument) {
-          return existingDocument;
-        }
+      throw new InternalServerErrorException(
+        'Document saved but failed to start processing. Please contact support.',
+      );
+    }
 
-        const document = manager.create(Document, {
-          ...createDocumentDto,
-          title: createDocumentDto.title || file.originalname,
-          author: createDocumentDto.author || null,
-          userId,
-          fileContentHash: fileContent.hash,
-        });
-
-        const savedDocument = await manager.save(Document, document);
-
-        try {
-          await this.documentProcessingQueue.add(
-            DocumentProcessingJob.PROCESS_DOCUMENT,
-            {
-              documentId: savedDocument.id,
-              fileUrl: fileContent.fileUrl,
-              userId,
-              format: fileContent.format,
-            },
-          );
-        } catch (error) {
-          this.logger.error(
-            `Failed to add document to processing queue: ${error.message}`,
-            error.stack,
-          );
-          throw new InternalServerErrorException(
-            'Failed to start document processing. Please try again later.',
-          );
-        }
-
-        return (await manager.findOne(Document, {
-          where: { id: savedDocument.id },
-          relations: ['fileContent'],
-        })) as Document;
-      },
-    );
+    return savedDocument;
   }
 
   async findAll(
