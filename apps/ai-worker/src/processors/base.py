@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
-from langchain_core.documents import Document
+from typing import List, Dict, Any
 
 
 class DocumentProcessor(ABC):
@@ -9,14 +8,14 @@ class DocumentProcessor(ABC):
     """
 
     @abstractmethod
-    def process(self, file_path: str) -> List[Document]:
+    def process(self, file_path: str) -> List[Dict[str, Any]]:
         """
-        Process the document at the given file path and return a list of Documents.
+        Process the document at the given file path and return structured data.
 
         Args:
             file_path (str): The path to the file to be processed.
 
         Returns:
-            List[Document]: A list of extracted documents.
+            List[Dict[str, Any]]: A list of dictionaries containing text, font_size, and page.
         """
         pass

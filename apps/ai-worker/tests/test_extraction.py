@@ -1,26 +1,26 @@
 import os
 import sys
-from reportlab.pdfgen import canvas
 
-# Add the parent directory to sys.path to resolve imports
+# Add the parent directory to sys.path to resolve imports correctly
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.processor_factory import ProcessorFactory
+from reportlab.pdfgen import canvas
 
 
 def create_test_pdf(file_path):
     c = canvas.Canvas(file_path)
-    c.drawString(100, 750, "Hello, this is a test PDF.")
-    c.createTwoPage()  # First page creation implicit, this ends it? No, save() ends.
-    # reportlab structure:
-    # draw, showPage() (ends page), save()
-
-    # Page 1
-    # already drawn "Hello..."
+    c.setFont("Helvetica", 22)
+    c.drawString(100, 750, "CHAPTER 3")
+    c.setFont("Helvetica", 12)
+    c.drawString(100, 700, "Hello, this is a test PDF.")
     c.showPage()
 
     # Page 2
-    c.drawString(100, 750, "This is the second page.")
+    c.setFont("Helvetica", 18)
+    c.drawString(100, 750, "The Journey")
+    c.setFont("Helvetica", 12)
+    c.drawString(100, 700, "This is the second page.")
     c.showPage()
 
     c.save()
@@ -34,20 +34,30 @@ def test_extraction():
     try:
         print("Testing PDF Processor...")
         processor = ProcessorFactory.get_processor("pdf")
-        documents = processor.process(pdf_path)
+        results = processor.process(pdf_path)
 
-        print(f"Extracted {len(documents)} pages.")
-        for i, doc in enumerate(documents):
-            print(f"--- Page {i+1} ---")
-            print(doc.page_content.strip())
+        print(f"Extracted {len(results)} items.")
+        for item in results[:5]:
+            print(
+                f"Page {item['page']} | Size {item['font_size']} | Text: {item['text']}"
+            )
 
-        assert len(documents) == 2
-        assert "Hello, this is a test PDF." in documents[0].page_content
-        assert "This is the second page." in documents[1].page_content
-        print("✅ PDF Extraction Verified Successfully!")
+        # Check for specific items
+        chapter_item = next(i for i in results if "CHAPTER 3" in i["text"])
+        assert chapter_item["font_size"] == 22
+        assert chapter_item["page"] == 1
+
+        journey_item = next(i for i in results if "The Journey" in i["text"])
+        assert journey_item["font_size"] == 18
+        assert journey_item["page"] == 2
+
+        print("✅ Structured PDF Extraction Verified Successfully!")
 
     except Exception as e:
         print(f"❌ Test Failed: {e}")
+        import traceback
+
+        traceback.print_exc()
     finally:
         if os.path.exists(pdf_path):
             os.remove(pdf_path)

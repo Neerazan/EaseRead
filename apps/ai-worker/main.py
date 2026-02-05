@@ -28,17 +28,13 @@ async def process_document(job, job_token):
         # If file_url is completely remote, we would need to download it to a temp path.
 
         processor = ProcessorFactory.get_processor(file_format)
-        documents = processor.process(file_url)
+        extracted_data = processor.process(file_url)
 
-        # Extract text from documents
-        extracted_text = [doc.page_content for doc in documents]
-
-        print(f"✅ Extracted {len(extracted_text)} pages/items.")
-
+        print(f"✅ Extracted {len(extracted_data)} items.")
         return {
             "status": "completed",
             "message": "Document processed successfully",
-            "data": extracted_text,
+            "data": extracted_data,
         }
 
     except Exception as e:
@@ -53,12 +49,11 @@ async def start_worker():
 
     # Connect to the EXACT same queue name as NestJS
     worker = Worker("document-processor", process_document, {"connection": redis_url})
-
     print(f"🚀 Python Worker started! Listening on queue: document-processing")
 
     # Keep the worker alive
     try:
-        await asynckio.Future()
+        await asyncio.Future()
     except asyncio.CancelledError:
         await worker.close()
 

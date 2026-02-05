@@ -1,5 +1,4 @@
-from typing import List
-from langchain_core.documents import Document
+from typing import List, Dict, Any
 from .base import DocumentProcessor
 
 
@@ -8,7 +7,7 @@ class EpubProcessor(DocumentProcessor):
     Processor for EPUB files.
     """
 
-    def process(self, file_path: str) -> List[Document]:
+    def process(self, file_path: str) -> List[Dict[str, Any]]:
         """
         Extracts text from an EPUB file.
 
@@ -16,7 +15,7 @@ class EpubProcessor(DocumentProcessor):
             file_path (str): The path to the EPUB file.
 
         Returns:
-            List[Document]: A list of extracted documents.
+            List[Dict[str, Any]]: A list of extracted data dictionaries.
 
         Raises:
             NotImplementedError: EPUB processing is not yet implemented.
