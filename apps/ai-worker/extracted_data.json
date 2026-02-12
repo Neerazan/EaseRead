@@ -1,0 +1,572 @@
+[
+  {
+    "text": "Nirajan Dhakal",
+    "font_size": 18.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Email",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ":",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "nirajandhakal634@gmail.com",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Address",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ": Shuklagandaki-1, Tanahun, Nepal",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Github",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ":",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "https://github.com/neerazan",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "LinkedIn",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ":",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "https://linkedin.com/in/nirajan/",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "I am a software engineer with a strong passion for technology. I research online apps and explore the latest",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "developments in tech during my personal time. I use Python, Django, and JavaScript frameworks like Next.js to",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "create scalable applications. I also have a strong desire to learn new things and keep up with the latest",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "developments in AI and ML technology.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "WORK EXPERIENCE",
+    "font_size": 13.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Software Developer (Remote)",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "February 2025 - Present",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "3P Trades LLC.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldItalicMT"
+  },
+  {
+    "text": "●​ Contributed to the development of Materiel Insights, a specialized platform for managing Bills of",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Materials (BOMs) and product lifecycle data.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Enhanced application performance through code optimization.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Implemented AI to query databases using natural language.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Full Stack Web Developer",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "June 2024 - February 2025",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Aarambha IT Research Center Pvt. Ltd.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldItalicMT"
+  },
+  {
+    "text": "●​ Contributed to backend development of",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "TishyandCo",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-ItalicMT"
+  },
+  {
+    "text": "e-commerce platform using Django and DRF,",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "building RESTful APIs and integrating Stripe payment system with asynchronous task processing using",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Redis and Celery.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Optimized and maintained backend infrastructure for",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "PolarTreks",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-ItalicMT"
+  },
+  {
+    "text": ", having improved system performance",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "and API response times.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Developed",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "SahariSwasthya",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-ItalicMT"
+  },
+  {
+    "text": "lab report generation and store system using Django and PostgreSQL,",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "having implemented features for lab report generation and administrative analytics.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Built and deployed",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "PokharaDarpan",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-ItalicMT"
+  },
+  {
+    "text": "news platform using Django and Bootstrap, having created a",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "responsive content management system for news articles.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Web Developer Intern",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "April 2023 - August 2023",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Pine Softwares Pvt. Ltd.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldItalicMT"
+  },
+  {
+    "text": "●​ Developed full-stack web applications using Laravel and MySQL for multiple clients",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Implemented responsive UI designs using Bootstrap",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "TECHNICAL SKILLS",
+    "font_size": 13.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Languages",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ": C, Python, JavaScript, TypeScript",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Framework/Libraries",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ": Django, Django REST Framework, React js, Next js, Tailwind CSS",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Tools",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ": Git, Docker",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Databases",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": ": PostgreSQL, MySQL, MongoDB",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "PROJECTS",
+    "font_size": 13.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "PDF OCR with RAG Chatbot (ongoing)",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "●​ Built a full-stack PDF assistant using React, Tailwind CSS, Express.js, and Vercel AI SDK.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Extracted text from PDFs using Tesseract and Gemini models.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Generated and stored vector embeddings using pgVector in PostgreSQL.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Implemented a lightweight RAG chatbot for querying document content via natural language.",
+    "font_size": 11.0,
+    "page": 1,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Auction/Bidding Web Application",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "(Project Link)",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Developed an auction platform using Django REST Framework and secure JWT authentication.",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Integrated Celery and Redis for handling time-sensitive tasks like auction completion and",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "notifications.",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Created a comprehensive product and transaction management system (including customer profiles,",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "reviews, and automated bidding).",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Designed a secure transaction system with customer balance management to ensure smooth auction",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "operations.",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "E-Commerce API",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "(Project Link)",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Built a Simple E-commerce REST API using Django and PostgreSQL, implementing secure",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "authentication and order processing systems",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Developed a robust product management system with integrated shopping cart functionality, allowing",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "real-time inventory tracking and automated order fulfillment",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "●​ Implemented comprehensive testing and monitoring using pytest and Locust, ensuring reliable",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "performance and high code quality",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "EDUCATION",
+    "font_size": 13.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Bachelor of Science in Information Technology",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "​",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-ItalicMT"
+  },
+  {
+    "text": "Completion Date: September 2024",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Infomax College of IT & Management",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldItalicMT"
+  },
+  {
+    "text": "●​",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Relevant Coursework:",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "Arial-BoldMT"
+  },
+  {
+    "text": "Operating Systems & Computer Architecture, Introduction to Databases, Web",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  },
+  {
+    "text": "Application, Mobile & Web Multimedia",
+    "font_size": 11.0,
+    "page": 2,
+    "font": "ArialMT"
+  }
+]

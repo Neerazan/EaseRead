@@ -115,4 +115,10 @@ export class DocumentsController {
   ) {
     return this.documentsService.remove(id, user.sub);
   }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeAll(@ActiveUser() user: ActiveUserData) {
+    return this.documentsService.removeAll(user.sub);
+  }
 }

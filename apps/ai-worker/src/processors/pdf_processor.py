@@ -33,4 +33,13 @@ class PdfProcessor(DocumentProcessor):
                                     }
                                 )
         doc.close()
+
+        # TODO: Remove this debug code after inspection
+        import json
+
+        output_file = "extracted_data.json"
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(extracted_data, f, indent=2, ensure_ascii=False)
+        print(f"Extracted data written to {output_file}")
+
         return extracted_data

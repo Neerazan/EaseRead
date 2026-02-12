@@ -31,6 +31,7 @@ async def process_document(job, job_token):
         extracted_data = processor.process(file_url)
 
         print(f"✅ Extracted {len(extracted_data)} items.")
+
         return {
             "status": "completed",
             "message": "Document processed successfully",

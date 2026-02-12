@@ -219,6 +219,10 @@ export class DocumentsService {
     });
   }
 
+  async removeAll(userId: string): Promise<void> {
+    await this.documentsRepository.delete({ userId });
+  }
+
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {
     switch (mimeType) {
       case 'application/pdf':
