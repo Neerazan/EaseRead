@@ -18,4 +18,7 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_TOKEN_TTL: Joi.number().default(86400),
   REDIS_HOST: Joi.string().required(),
   REDIS_PORT: Joi.number().default(6379),
+  GEMINI_API_KEY: Joi.string().required(),
+  EMBEDDING_MODEL: Joi.string().default('gemini-embedding-001'),
+  EMBEDDING_DIMENSION: Joi.number().default(3072),
 });
