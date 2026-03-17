@@ -17,6 +17,7 @@ from unstructured.chunking.title import chunk_by_title
 
 __all__ = [
     "create_chunks_by_title",
+    "extract_heading_metadata",
     "separate_content_types",
     "create_ai_enhanced_summary",
     "summarise_chunks",
@@ -114,6 +115,61 @@ def separate_content_types(chunk: Any) -> Dict[str, Any]:
 
     content_data["types"] = list(set(content_data["types"]))
     return content_data
+
+
+# ---------------------------------------------------------------------------
+# Heading / chapter metadata extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_heading_metadata(chunk: Any) -> Dict[str, Any]:
+    """Extract chapter title and heading path from a chunk's original elements.
+
+    Walks the ``orig_elements`` stored by :func:`chunk_by_title` and
+    collects every ``Title`` element.  The first (or shallowest) title
+    becomes the *chapter title*; the ordered list of all titles forms
+    the *heading path*.
+
+    Returns
+    -------
+    dict
+        ``{"chapter_title": str | None, "heading_path": list[str] | None}``
+    """
+    chapter_title: Optional[str] = None
+    heading_path: List[str] = []
+
+    chunk_meta = getattr(chunk, "metadata", None)
+    orig_elements = getattr(chunk_meta, "orig_elements", None) or []
+
+    shallowest_depth: Optional[int] = None
+
+    for element in orig_elements:
+        if type(element).__name__ != "Title":
+            continue
+
+        title_text = getattr(element, "text", "") or ""
+        title_text = title_text.strip()
+        if not title_text:
+            continue
+
+        heading_path.append(title_text)
+
+        # Determine shallowest (most significant) title → chapter title
+        el_meta = getattr(element, "metadata", None)
+        depth = getattr(el_meta, "category_depth", None)
+
+        if depth is not None:
+            if shallowest_depth is None or depth < shallowest_depth:
+                shallowest_depth = depth
+                chapter_title = title_text
+        elif chapter_title is None:
+            # No depth info — fall back to the first title encountered
+            chapter_title = title_text
+
+    return {
+        "chapter_title": chapter_title,
+        "heading_path": heading_path if heading_path else None,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -230,6 +286,8 @@ def summarise_chunks(
         chunk_metadata = getattr(chunk, "metadata", None)
         page_number = getattr(chunk_metadata, "page_number", None) if chunk_metadata else None
 
+        heading_info = extract_heading_metadata(chunk)
+
         doc = Document(
             page_content=enhanced_content,
             metadata={
@@ -239,6 +297,9 @@ def summarise_chunks(
                 "semantic_summary": enhanced_content if has_rich_content else None,
                 "page_number": page_number,
                 "is_important": False,
+                "chapter_title": heading_info["chapter_title"],
+                "heading_path": heading_info["heading_path"],
+                "token_count": len(enhanced_content.split()),
             },
         )
         langchain_documents.append(doc)

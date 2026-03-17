@@ -112,6 +112,9 @@ async def process_document(job, job_token):
                 "semantic_summary": chunk_metadata.get("semantic_summary"),
                 "page_number": chunk_metadata.get("page_number"),
                 "is_important": chunk_metadata.get("is_important", False),
+                "chapter_title": chunk_metadata.get("chapter_title"),
+                "heading_path": chunk_metadata.get("heading_path"),
+                "token_count": chunk_metadata.get("token_count"),
             })
 
         stored = db_service.store_chunks_batch(file_content_hash, chunk_rows)
