@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class EnhanceDocumentChunkTable1773752449368 implements MigrationInterface {
-  name = 'EnhanceDocumentChunkTable1773752449368';
+export class InitialDatabaseStructure1773752838560 implements MigrationInterface {
+  name = 'InitialDatabaseStructure1773752838560';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
