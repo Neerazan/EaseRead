@@ -133,7 +133,7 @@ export class DocumentsService {
         await this.documentProcessingQueue.add(
           DocumentProcessingJob.PROCESS_DOCUMENT,
           {
-            documentId: savedDocument.id,
+            fileContentHash: savedDocument.fileContent.hash,
             fileUrl: savedDocument.fileContent.fileUrl,
             userId,
             format: savedDocument.fileContent.format,

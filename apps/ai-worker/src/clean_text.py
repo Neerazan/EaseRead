@@ -1,31 +1,64 @@
-# clean up the partitioned elements
+"""
+Text cleaning utilities for parsed document elements.
+
+Applies a pipeline of cleaning transformations to raw text extracted by
+``unstructured`` parsers before chunking and embedding.
+"""
+
 import re
+from typing import Any, List
+
 from unstructured.cleaners.core import (
+    bytes_string_to_string,
     clean,
     clean_non_ascii_chars,
-    bytes_string_to_string,
     clean_postfix,
     clean_prefix,
 )
 
+__all__ = [
+    "clean_element_text",
+    "clean_elements",
+    "fix_punctuation_spacing",
+    "remove_citations",
+]
 
-remove_citations = lambda text: re.sub(r"\[\d+(?:,\s*\d+)*\]", "", text)
+
+# ---------------------------------------------------------------------------
+# Individual cleaning helpers
+# ---------------------------------------------------------------------------
+
+
+def remove_citations(text: str) -> str:
+    """Remove bracketed numeric citations, e.g. ``[1]``, ``[2, 3]``."""
+    return re.sub(r"\[\d+(?:,\s*\d+)*\]", "", text)
 
 
 def fix_punctuation_spacing(text: str) -> str:
-    text = re.sub(r"\s+([,.;:!?])", r"\1", text)  # Remove space before punctuation
-    text = re.sub(
-        r"([,.;:!?])([^\s])", r"\1 \2", text
-    )  # Ensure space after punctuation
+    """Normalise whitespace around common punctuation marks."""
+    text = re.sub(r"\s+([,.;:!?])", r"\1", text)  # no space before
+    text = re.sub(r"([,.;:!?])([^\s])", r"\1 \2", text)  # ensure space after
     return text
 
 
-def clean_element_text(element, debug=False):
-    """Clean text in partitioned elements before chunking and embedding."""
+# ---------------------------------------------------------------------------
+# Element-level cleaning
+# ---------------------------------------------------------------------------
+
+
+def clean_element_text(element: Any, *, debug: bool = False) -> Any:
+    """Apply the full cleaning pipeline to a single *unstructured* element.
+
+    The element is mutated **in place** and also returned for convenience.
+    Elements without a ``text`` attribute (or whose text is ``None``) are
+    returned unchanged.
+    """
     if not hasattr(element, "text") or element.text is None:
         return element
 
-    text = element.text
+    text: str = element.text
+
+    # Cleaning pipeline — order matters.
     text = remove_citations(text)
     text = fix_punctuation_spacing(text)
     text = clean_non_ascii_chars(text)
@@ -42,20 +75,18 @@ def clean_element_text(element, debug=False):
     )
     text = text.strip()
 
-    # Drop empty text blocks
-    if text == "":
-        element.text = ""
-        return element
-
     element.text = text
-    if debug:
-        print("Cleaned element:", text[:200])
+
+    if debug and text:
+        print(f"  [clean] {text[:200]}")
+
     return element
 
 
-# Apply cleaning to all parsed elements
-cleaned_elements = [clean_element_text(el) for el in elements]
-print(f"✅ Cleaned {len(cleaned_elements)} elements")
+def clean_elements(elements: List[Any], *, debug: bool = False) -> List[Any]:
+    """Apply :func:`clean_element_text` to every element in *elements*.
 
-# Replace elements with cleaned elements for downstream processing
-elements = cleaned_elements
+    Empty-text elements are filtered out of the returned list.
+    """
+    cleaned = [clean_element_text(el, debug=debug) for el in elements]
+    return [el for el in cleaned if getattr(el, "text", None)]

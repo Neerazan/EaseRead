@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { DocumentFormat } from '../enum/document-format.enum';
+import { DocumentChunk } from './document-chunk.entity';
 import { Document } from './document.entity';
 
 @Entity()
@@ -55,4 +56,7 @@ export class FileContent {
 
   @OneToMany(() => Document, (document) => document.fileContent)
   documents: Document[];
+
+  @OneToMany(() => DocumentChunk, (chunk) => chunk.fileContent)
+  chunks: DocumentChunk[];
 }

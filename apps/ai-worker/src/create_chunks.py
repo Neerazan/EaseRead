@@ -1,107 +1,185 @@
-def create_chunks_by_title(elements):
-    """Create intelligent chunks using title-based strategy"""
-    print("🔨 Creating smart chunks...")
+"""
+Document chunking and AI-enhanced summarisation.
+
+Provides utilities for splitting cleaned *unstructured* elements into
+semantically meaningful chunks, optionally enriching chunks that contain
+tables or images with an LLM-generated searchable description.
+"""
+
+import json
+import logging
+from typing import Any, Dict, List, Optional
+
+from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+from unstructured.chunking.title import chunk_by_title
+
+__all__ = [
+    "create_chunks_by_title",
+    "separate_content_types",
+    "create_ai_enhanced_summary",
+    "summarise_chunks",
+]
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Default chunking parameters
+# ---------------------------------------------------------------------------
+
+DEFAULT_MAX_CHARACTERS = 3000
+DEFAULT_NEW_AFTER_N_CHARS = 2400
+DEFAULT_COMBINE_TEXT_UNDER_N_CHARS = 500
+
+
+# ---------------------------------------------------------------------------
+# Chunking
+# ---------------------------------------------------------------------------
+
+
+def create_chunks_by_title(
+    elements: List[Any],
+    *,
+    max_characters: int = DEFAULT_MAX_CHARACTERS,
+    new_after_n_chars: int = DEFAULT_NEW_AFTER_N_CHARS,
+    combine_text_under_n_chars: int = DEFAULT_COMBINE_TEXT_UNDER_N_CHARS,
+) -> list:
+    """Split *elements* into chunks using a title-based strategy.
+
+    Parameters
+    ----------
+    elements:
+        Cleaned ``unstructured`` elements from a document parser.
+    max_characters:
+        Hard upper limit on characters per chunk.
+    new_after_n_chars:
+        Soft target — try to start a new chunk after this many characters.
+    combine_text_under_n_chars:
+        Merge tiny chunks shorter than this with their neighbours.
+    """
+    logger.info("Creating chunks (title-based strategy)…")
 
     chunks = chunk_by_title(
-        elements,  # The parsed PDF elements from previous step
-        max_characters=3000,  # Hard limit - never exceed 3000 characters per chunk
-        new_after_n_chars=2400,  # Try to start a new chunk after 2400 characters
-        combine_text_under_n_chars=500,  # Merge tiny chunks under 500 chars with neighbors
+        elements,
+        max_characters=max_characters,
+        new_after_n_chars=new_after_n_chars,
+        combine_text_under_n_chars=combine_text_under_n_chars,
     )
 
-    print(f"✅ Created {len(chunks)} chunks")
+    logger.info("Created %d chunks.", len(chunks))
     return chunks
 
 
-# Create chunks
-chunks = create_chunks_by_title(elements)
+# ---------------------------------------------------------------------------
+# Content-type analysis
+# ---------------------------------------------------------------------------
 
 
-def separate_content_types(chunk):
-    """Analyze what types of content are in a chunk"""
-    content_data = {'text': chunk.text, 'tables': [], 'images': [], 'types': ['text']}
+def separate_content_types(chunk: Any) -> Dict[str, Any]:
+    """Inspect a chunk and separate its content into text, tables, and images.
 
-    # Check for tables and images in original elements
-    if hasattr(chunk, 'metadata') and hasattr(chunk.metadata, 'orig_elements'):
-        for element in chunk.metadata.orig_elements:
-            element_type = type(element).__name__
+    Returns a dict with keys ``text``, ``tables``, ``images``, and ``types``.
+    """
+    content_data: Dict[str, Any] = {
+        "text": chunk.text,
+        "tables": [],
+        "images": [],
+        "types": ["text"],
+    }
 
-            # Handle tables
-            if element_type == 'Table':
-                content_data['types'].append('table')
-                table_html = getattr(element.metadata, 'text_as_html', element.text)
-                content_data['tables'].append(table_html)
+    orig_elements = getattr(
+        getattr(chunk, "metadata", None), "orig_elements", None
+    )
+    if orig_elements is None:
+        return content_data
 
-            # Handle images
-            elif element_type == 'Image':
-                if hasattr(element, 'metadata') and hasattr(
-                    element.metadata, 'image_base64'
-                ):
-                    content_data['types'].append('image')
-                    content_data['images'].append(element.metadata.image_base64)
+    for element in orig_elements:
+        element_type = type(element).__name__
 
-    content_data['types'] = list(set(content_data['types']))
+        if element_type == "Table":
+            content_data["types"].append("table")
+            table_html = getattr(
+                getattr(element, "metadata", None), "text_as_html", element.text
+            )
+            content_data["tables"].append(table_html)
+
+        elif element_type == "Image":
+            image_b64 = getattr(
+                getattr(element, "metadata", None), "image_base64", None
+            )
+            if image_b64:
+                content_data["types"].append("image")
+                content_data["images"].append(image_b64)
+
+    content_data["types"] = list(set(content_data["types"]))
     return content_data
 
 
-def create_ai_enhanced_summary(text: str, tables: List[str], images: List[str]) -> str:
-    """Create AI-enhanced summary for mixed content"""
+# ---------------------------------------------------------------------------
+# AI-enhanced summarisation
+# ---------------------------------------------------------------------------
 
+
+def create_ai_enhanced_summary(
+    text: str,
+    tables: List[str],
+    images: List[str],
+    *,
+    model_name: str = "gemini-2.5-flash",
+) -> str:
+    """Generate a searchable LLM description for mixed content.
+
+    Falls back to a simple text summary if the LLM call fails.
+    """
     try:
-        # Initialize LLM (needs vision model for images)
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+        llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
 
-        # Build the text prompt
-        prompt_text = f"""You are creating a searchable description for document content retrieval.
+        prompt_text = (
+            "You are creating a searchable description for document content "
+            "retrieval.\n\n"
+            "CONTENT TO ANALYZE:\n"
+            f"TEXT CONTENT:\n{text}\n\n"
+        )
 
-        CONTENT TO ANALYZE:
-        TEXT CONTENT:
-        {text}
-
-        """
-
-        # Add tables if present
         if tables:
             prompt_text += "TABLES:\n"
-            for i, table in enumerate(tables):
-                prompt_text += f"Table {i+1}:\n{table}\n\n"
+            for i, table in enumerate(tables, start=1):
+                prompt_text += f"Table {i}:\n{table}\n\n"
 
-                prompt_text += """
-                YOUR TASK:
-                Generate a comprehensive, searchable description that covers:
+        prompt_text += (
+            "YOUR TASK:\n"
+            "Generate a comprehensive, searchable description that covers:\n"
+            "1. Key facts, numbers, and data points from text and tables\n"
+            "2. Main topics and concepts discussed\n"
+            "3. Questions this content could answer\n"
+            "4. Visual content analysis (charts, diagrams, patterns in images)\n"
+            "5. Alternative search terms users might use\n\n"
+            "Make it detailed and searchable — prioritize findability over "
+            "brevity.\n\n"
+            "SEARCHABLE DESCRIPTION:"
+        )
 
-                1. Key facts, numbers, and data points from text and tables
-                2. Main topics and concepts discussed  
-                3. Questions this content could answer
-                4. Visual content analysis (charts, diagrams, patterns in images)
-                5. Alternative search terms users might use
+        message_content: list[dict[str, Any]] = [
+            {"type": "text", "text": prompt_text}
+        ]
 
-                Make it detailed and searchable - prioritize findability over brevity.
-
-                SEARCHABLE DESCRIPTION:"""
-
-        # Build message content starting with text
-        message_content = [{"type": "text", "text": prompt_text}]
-
-        # Add images to the message
         for image_base64 in images:
             message_content.append(
                 {
                     "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"},
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{image_base64}"
+                    },
                 }
             )
 
-        # Send to AI and get response
-        message = HumanMessage(content=message_content)
-        response = llm.invoke([message])
-
+        response = llm.invoke([HumanMessage(content=message_content)])
         return response.content
 
-    except Exception as e:
-        print(f"     ❌ AI summary failed: {e}")
-        # Fallback to simple summary
-        summary = f"{text[:300]}..."
+    except Exception:
+        logger.exception("AI summary generation failed; using fallback.")
+        summary = f"{text[:300]}…"
         if tables:
             summary += f" [Contains {len(tables)} table(s)]"
         if images:
@@ -109,61 +187,61 @@ def create_ai_enhanced_summary(text: str, tables: List[str], images: List[str]) 
         return summary
 
 
-def summarise_chunks(chunks):
-    """Process all chunks with AI Summaries"""
-    print("🧠 Processing chunks with AI Summaries...")
+# ---------------------------------------------------------------------------
+# Chunk processing pipeline
+# ---------------------------------------------------------------------------
 
-    langchain_documents = []
-    total_chunks = len(chunks)
 
-    for i, chunk in enumerate(chunks):
-        current_chunk = i + 1
-        print(f"   Processing chunk {current_chunk}/{total_chunks}")
+def summarise_chunks(
+    chunks: list,
+    *,
+    ai_model: str = "gemini-2.5-flash",
+) -> List[Document]:
+    """Process all chunks: analyse content types and create LangChain Documents.
 
-        # Analyze chunk content
+    Chunks that contain tables or images are enriched with an AI-generated
+    summary.  Plain-text chunks use their raw text as ``page_content``.
+
+    Returns a list of :class:`langchain_core.documents.Document` instances.
+    """
+    logger.info("Processing %d chunks with AI summaries…", len(chunks))
+
+    langchain_documents: List[Document] = []
+    total = len(chunks)
+
+    for idx, chunk in enumerate(chunks, start=1):
+        logger.info("  Chunk %d/%d", idx, total)
+
         content_data = separate_content_types(chunk)
 
-        # Debug prints
-        print(f"     Types found: {content_data['types']}")
-        print(
-            f"     Tables: {len(content_data['tables'])}, Images: {len(content_data['images'])}"
-        )
+        has_rich_content = bool(content_data["tables"] or content_data["images"])
 
-        # Create AI-enhanced summary if chunk has tables/images
-        if content_data['tables'] or content_data['images']:
-            print(f"     → Creating AI summary for mixed content...")
-            try:
-                enhanced_content = create_ai_enhanced_summary(
-                    content_data['text'], content_data['tables'], content_data['images']
-                )
-                print(f"     → AI summary created successfully")
-                print(f"     → Enhanced content preview: {enhanced_content[:200]}...")
-            except Exception as e:
-                print(f"     ❌ AI summary failed: {e}")
-                enhanced_content = content_data['text']
+        if has_rich_content:
+            logger.info("    → Creating AI summary for mixed content…")
+            enhanced_content = create_ai_enhanced_summary(
+                content_data["text"],
+                content_data["tables"],
+                content_data["images"],
+                model_name=ai_model,
+            )
         else:
-            print(f"     → Using raw text (no tables/images)")
-            enhanced_content = content_data['text']
+            enhanced_content = content_data["text"]
 
-        # Create LangChain Document with rich metadata
+        chunk_metadata = getattr(chunk, "metadata", None)
+        page_number = getattr(chunk_metadata, "page_number", None) if chunk_metadata else None
+
         doc = Document(
             page_content=enhanced_content,
             metadata={
-                "original_content": json.dumps(
-                    {
-                        "raw_text": content_data['text'],
-                        "tables_html": content_data['tables'],
-                        "images_base64": content_data['images'],
-                    }
-                )
+                "chunk_index": idx - 1,
+                "content_types": content_data["types"],
+                "raw_text": content_data["text"],
+                "semantic_summary": enhanced_content if has_rich_content else None,
+                "page_number": page_number,
+                "is_important": False,
             },
         )
-
         langchain_documents.append(doc)
 
-    print(f"✅ Processed {len(langchain_documents)} chunks")
+    logger.info("Processed %d chunks into LangChain Documents.", len(langchain_documents))
     return langchain_documents
-
-
-# Process chunks with AI
-processed_chunks = summarise_chunks(chunks)

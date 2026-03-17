@@ -1,14 +1,23 @@
-from typing import Dict, Any
-from .base import DocumentProcessor
+import logging
+from typing import Any, List
+
 from unstructured.partition.pdf import partition_pdf
+
+from .base import DocumentProcessor
+
+logger = logging.getLogger(__name__)
 
 
 class PdfProcessor(DocumentProcessor):
-    def __init__(self):
-        pass
+    """Extract structured elements from a PDF using ``unstructured``."""
 
-    def process(self, file_path: str) -> Dict[str, Any]:
-        print(f"Partitioning document: {file_path} ....")
+    def process(self, file_path: str) -> List[Any]:
+        """Partition a PDF into raw *unstructured* elements.
+
+        Uses the ``hi_res`` strategy with table-structure inference and
+        image extraction enabled.
+        """
+        logger.info("Partitioning PDF: %s", file_path)
 
         elements = partition_pdf(
             filename=file_path,
@@ -19,15 +28,5 @@ class PdfProcessor(DocumentProcessor):
             extract_image_block_to_payload=True,
         )
 
-        print(f"extracted {len(elements)} elements.")
-        
-        # Convert elements to dictionaries for return and saving
-        element_dicts = [el.to_dict() for el in elements]
-
-        # Save to file for inspection
-        import json
-        with open("processed_elements.json", "w") as f:
-            json.dump(element_dicts, f, indent=2)
-            print(f"Saved elements to processed_elements.json")
-
-        return element_dicts
+        logger.info("Extracted %d elements from PDF.", len(elements))
+        return elements

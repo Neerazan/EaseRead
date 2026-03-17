@@ -1,21 +1,23 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any, List
 
 
 class DocumentProcessor(ABC):
-    """
-    Abstract base class for document processors.
+    """Abstract base class for document processors.
+
+    Subclasses must implement :meth:`process` which receives a file path
+    and returns a list of raw *unstructured* elements.
     """
 
     @abstractmethod
-    def process(self, file_path: str) -> List[Dict[str, Any]]:
-        """
-        Process the document at the given file path and return structured data.
+    def process(self, file_path: str) -> List[Any]:
+        """Parse *file_path* and return raw ``unstructured`` elements.
 
         Args:
-            file_path (str): The path to the file to be processed.
+            file_path: Absolute path to the document file.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing text, font_size, and page.
+            A list of ``unstructured`` element objects ready for cleaning
+            and chunking.
         """
-        pass
+        ...
