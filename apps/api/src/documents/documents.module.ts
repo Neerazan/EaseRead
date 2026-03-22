@@ -14,5 +14,6 @@ import { FileContent } from './entities/file-content.entity';
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService],
+  exports: [DocumentsService],
 })
 export class DocumentsModule {}

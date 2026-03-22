@@ -133,7 +133,7 @@ export class DocumentsService {
         await this.documentProcessingQueue.add(
           DocumentProcessingJob.PROCESS_DOCUMENT,
           {
-            documentId: savedDocument.id,
+            fileContentHash: savedDocument.fileContent.hash,
             fileUrl: savedDocument.fileContent.fileUrl,
             userId,
             format: savedDocument.fileContent.format,
@@ -217,6 +217,10 @@ export class DocumentsService {
     await this.cleanupQueue.add(CleanupJob.CLEANUP_FILE, {
       fileContentHash,
     });
+  }
+
+  async removeAll(userId: string): Promise<void> {
+    await this.documentsRepository.delete({ userId });
   }
 
   private mapMimeTypeToFormat(mimeType: string): DocumentFormat {

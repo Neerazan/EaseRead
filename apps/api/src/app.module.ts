@@ -26,6 +26,7 @@ import { DatabaseInitializationService } from './database/database-initializatio
 import { DocumentsModule } from './documents/documents.module';
 import { IamModule } from './iam/iam.module';
 import { QueueModule } from './queue/queue.module';
+import { QaModule } from './qa/qa.module';
 import { RedisModule } from './redis/redis.module';
 import { UserModule } from './user/user.module';
 
@@ -63,6 +64,7 @@ import { UserModule } from './user/user.module';
     LoggerModule,
     RedisModule,
     DocumentsModule,
+    QaModule,
     QueueModule,
   ],
   controllers: [AppController],
