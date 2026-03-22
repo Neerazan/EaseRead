@@ -82,7 +82,7 @@ class EmbeddingService:
             batch = texts[start:end]
 
             logger.info(
-                "  Embedding batch %d–%d / %d",
+                "  Embedding batch %d-%d / %d",
                 start + 1,
                 end,
                 total,

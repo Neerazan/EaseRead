@@ -102,7 +102,7 @@ async def process_document(job, job_token):
         # 6. Store in database ─────────────────────────────────────────
         logger.info("Step 6/6 — Storing chunks + embeddings in database…")
         chunk_rows = []
-        for doc, embedding in zip(langchain_docs, embeddings):
+        for doc, embedding in zip(langchain_docs, embeddings, strict=True):
             chunk_metadata = doc.metadata
             chunk_rows.append({
                 "content": chunk_metadata.get("raw_text", doc.page_content),
