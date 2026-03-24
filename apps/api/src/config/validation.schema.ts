@@ -21,4 +21,5 @@ export const validationSchema = Joi.object({
   GEMINI_API_KEY: Joi.string().required(),
   EMBEDDING_MODEL: Joi.string().default('gemini-embedding-001'),
   EMBEDDING_DIMENSION: Joi.number().default(3072),
+  GEMINI_CHAT_MODEL: Joi.string().default('gemini-1.5-flash'),
 });

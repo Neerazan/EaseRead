@@ -8,6 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 import { AbstractTimestampEntity } from '../../common/entities/base.entity';
+import { DocumentType } from '../enum/document-type.enum';
 import { FileContent } from './file-content.entity';
 
 @Entity()
@@ -31,6 +32,16 @@ export class Document extends AbstractTimestampEntity {
 
   @Column({ type: 'varchar', length: 64 })
   fileContentHash: string;
+
+  @Column({
+    type: 'enum',
+    enum: DocumentType,
+    default: DocumentType.NOVEL,
+  })
+  documentType: DocumentType;
+
+  @Column({ type: 'boolean', default: true })
+  preventSpoilers: boolean;
 
   @ManyToOne(() => FileContent, (fileContent) => fileContent.documents)
   @JoinColumn({ name: 'fileContentHash', referencedColumnName: 'hash' })
