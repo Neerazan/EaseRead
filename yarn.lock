@@ -532,6 +532,7 @@ __metadata:
     "@google/generative-ai": "npm:^0.24.1"
     "@langchain/core": "npm:^1.1.35"
     "@langchain/google-genai": "npm:^2.1.26"
+    "@langchain/langgraph": "npm:^1.2.6"
     "@nestjs/bullmq": "npm:^11.0.4"
     "@nestjs/cli": "npm:^11.0.0"
     "@nestjs/common": "npm:^11.0.1"
@@ -565,7 +566,6 @@ __metadata:
     ioredis: "npm:^5.9.2"
     jest: "npm:^30.0.0"
     joi: "npm:^18.0.2"
-    langchain: "npm:^1.2.36"
     nest-winston: "npm:^1.10.2"
     pg: "npm:^8.17.1"
     prettier: "npm:^3.4.2"
@@ -1739,7 +1739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/langgraph-checkpoint@npm:^1.0.0, @langchain/langgraph-checkpoint@npm:^1.0.1":
+"@langchain/langgraph-checkpoint@npm:^1.0.1":
   version: 1.0.1
   resolution: "@langchain/langgraph-checkpoint@npm:1.0.1"
   dependencies:
@@ -1750,9 +1750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/langgraph-sdk@npm:~1.8.0":
-  version: 1.8.0
-  resolution: "@langchain/langgraph-sdk@npm:1.8.0"
+"@langchain/langgraph-sdk@npm:~1.8.1":
+  version: 1.8.2
+  resolution: "@langchain/langgraph-sdk@npm:1.8.2"
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
     p-queue: "npm:^9.0.1"
@@ -1775,16 +1775,16 @@ __metadata:
       optional: true
     vue:
       optional: true
-  checksum: 10c0/1fab0da52a1e0f84810430d30759e4a2cf949fa4d9b21fa8849bd4b3e8cacc7f54d795497e13a66bd44a412266fa9027b06ade1d1ce9b310bcf47c220d1c657b
+  checksum: 10c0/d738ff78f91e31535a4d44948ffe1437d2fbe62537daba14ba6f2fc8852d23245c2743f882c75ec30a9163169e0ca83ad52a146bb73ee21ec1c7a1b3cd7628a2
   languageName: node
   linkType: hard
 
-"@langchain/langgraph@npm:^1.1.2":
-  version: 1.2.5
-  resolution: "@langchain/langgraph@npm:1.2.5"
+"@langchain/langgraph@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@langchain/langgraph@npm:1.2.6"
   dependencies:
     "@langchain/langgraph-checkpoint": "npm:^1.0.1"
-    "@langchain/langgraph-sdk": "npm:~1.8.0"
+    "@langchain/langgraph-sdk": "npm:~1.8.1"
     "@standard-schema/spec": "npm:1.1.0"
     uuid: "npm:^10.0.0"
   peerDependencies:
@@ -1794,7 +1794,7 @@ __metadata:
   peerDependenciesMeta:
     zod-to-json-schema:
       optional: true
-  checksum: 10c0/2748b3da286ea775bafcbc1945f3a2846f74ff95cb3f9258b827249b71ee6944a6e320fcb3d74251a25a41e64a40a94c73a45941197a7cfb474fe478c2a48fe1
+  checksum: 10c0/c11a3045896c9a0daac024038bccf8c7ee4fd6227b767c2df60a153f8ab18643b88453efbf7cc7925c3b837db1cc719caaa1488861c3bda946b8b1dc708a2ce2
   languageName: node
   linkType: hard
 
@@ -7589,21 +7589,6 @@ __metadata:
   version: 2.0.0
   resolution: "kuler@npm:2.0.0"
   checksum: 10c0/0a4e99d92ca373f8f74d1dc37931909c4d0d82aebc94cf2ba265771160fc12c8df34eaaac80805efbda367e2795cb1f1dd4c3d404b6b1cf38aec94035b503d2d
-  languageName: node
-  linkType: hard
-
-"langchain@npm:^1.2.36":
-  version: 1.2.36
-  resolution: "langchain@npm:1.2.36"
-  dependencies:
-    "@langchain/langgraph": "npm:^1.1.2"
-    "@langchain/langgraph-checkpoint": "npm:^1.0.0"
-    langsmith: "npm:>=0.5.0 <1.0.0"
-    uuid: "npm:^11.1.0"
-    zod: "npm:^3.25.76 || ^4"
-  peerDependencies:
-    "@langchain/core": ^1.1.35
-  checksum: 10c0/73e4bf8e781760b3cea61b41e1b04c5fb36641efb0db7fa374114f541384fc272df68edf0cd7608b3de4cf84e07b8b64c125a54cc621ba365e46e1645ede506f
   languageName: node
   linkType: hard
 

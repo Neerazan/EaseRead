@@ -1,17 +1,16 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
-// @ts-ignore - TS module resolution struggles with LangChain exports here
-import { createToolCallingAgent, AgentExecutor } from 'langchain/agents';
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
-import { BaseMessage } from '@langchain/core/messages';
+import { BaseMessage, AIMessage, ToolMessage } from '@langchain/core/messages';
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import type { RagSearchService } from './rag-search.service';
+import { RagSearchService } from './rag-search.service';
 import geminiConfig from '../config/gemini.config';
 
 @Injectable()
@@ -30,7 +29,7 @@ export class LlmService {
   getModel(temperature: number = 0.2): ChatGoogleGenerativeAI {
     return new ChatGoogleGenerativeAI({
       apiKey: this.config.apiKey,
-      model: this.config.chatModel, // Changed from modelName to model
+      model: this.config.chatModel,
       temperature,
     });
   }
@@ -87,49 +86,64 @@ export class LlmService {
 
   /**
    * Executes a streaming Tool-Calling Agent for the Selection Action pipeline.
+   * Uses model.bindTools() + manual agent loop (LangChain v1+ pattern).
    * If context is insufficient, the LLM will call the `search_book` tool.
    */
   async streamSelectionActionAgent(
     fileContentHash: string,
     preventSpoilers: boolean,
-    actionPrompt: string, // Rigid prompt telling the LLM what to do
+    actionPrompt: string,
     selectedText: string,
     surroundingContext: string,
     question?: string,
     currentPage?: number,
   ): Promise<AsyncGenerator<any>> {
-    const model = this.getModel(0.2);
     const searchTool = this.buildSearchTool(
       fileContentHash,
       preventSpoilers,
       currentPage,
     );
     const tools = [searchTool];
+    const model = this.getModel(0.2);
 
-    const prompt = ChatPromptTemplate.fromMessages([
-      [
-        'system',
-        actionPrompt +
-          `\n\nUse the provided Context to answer. If the immediate Context is insufficient, you MUST use the 'search_book' tool to find more information.`,
-      ],
-      [
-        'human',
-        `Word/Selection: {selectedText}\nContext: {surroundingContext}\nQuestion: {question}`,
-      ],
-      ['placeholder', '{agent_scratchpad}'],
-    ]);
+    const systemMessage =
+      actionPrompt +
+      `\n\nUse the provided Context to answer. If the immediate Context is insufficient, you MUST use the 'search_book' tool to find more information.`;
 
-    const agent = createToolCallingAgent({ llm: model, tools, prompt });
-    const executor = new AgentExecutor({ agent, tools });
+    const humanMessage = `Word/Selection: ${selectedText}\nContext: ${surroundingContext}\nQuestion: ${question || 'N/A'}`;
 
-    return executor.streamEvents(
-      {
-        selectedText,
-        surroundingContext,
-        question: question || 'N/A',
-      },
+    const agent = createReactAgent({
+      llm: model,
+      tools,
+      stateModifier: systemMessage,
+    });
+
+    const stream = await agent.streamEvents(
+      { messages: [['human', humanMessage]] },
       { version: 'v2' },
     );
+
+    const self = this;
+    async function* agentStream(): AsyncGenerator<any> {
+      for await (const event of stream) {
+        if (
+          event.event === 'on_chat_model_stream' &&
+          event.data?.chunk?.content &&
+          typeof event.data.chunk.content === 'string'
+        ) {
+          yield {
+            event: 'on_chat_model_stream',
+            data: { chunk: { content: event.data.chunk.content } },
+          };
+        }
+
+        if (event.event === 'on_tool_start') {
+          self.logger.debug(`Agent invoking tool: ${event.name}`);
+        }
+      }
+    }
+
+    return agentStream();
   }
 
   /**
@@ -137,7 +151,7 @@ export class LlmService {
    */
   async streamChatChain(
     chatMessage: string,
-    contextChunks: string, // Evaluated via RAG before calling
+    contextChunks: string,
     chatHistoryData: BaseMessage[],
     systemPrompt: string,
   ): Promise<AsyncGenerator<any>> {
