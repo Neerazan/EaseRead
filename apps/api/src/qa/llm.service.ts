@@ -1,17 +1,17 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { ConfigType } from '@nestjs/config';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { BaseMessage } from '@langchain/core/messages';
+import { StringOutputParser } from '@langchain/core/output_parsers';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
 import { tool } from '@langchain/core/tools';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import type { ConfigType } from '@nestjs/config';
 import { z } from 'zod';
-import { BaseMessage, AIMessage, ToolMessage } from '@langchain/core/messages';
-import { StringOutputParser } from '@langchain/core/output_parsers';
-import { RagSearchService } from './rag-search.service';
 import geminiConfig from '../config/gemini.config';
+import { RagSearchService } from './rag-search.service';
 
 @Injectable()
 export class LlmService {
