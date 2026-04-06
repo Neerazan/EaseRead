@@ -20,6 +20,7 @@ import {
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { GetDocumentsQueryDto } from './dto/get-documents-query.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { UpdateDocumentSettingsDto } from './dto/update-document-settings.dto';
 import { Document } from './entities/document.entity';
 import { FileContent } from './entities/file-content.entity';
 import { DocumentFormat } from './enum/document-format.enum';
@@ -205,6 +206,21 @@ export class DocumentsService {
   ): Promise<Document> {
     const document = await this.findOne(id, userId);
     Object.assign(document, updateDocumentDto);
+    return this.documentsRepository.save(document);
+  }
+
+  async updateSettings(
+    id: string,
+    userId: string,
+    updateDocumentSettingsDto: UpdateDocumentSettingsDto,
+  ): Promise<Document> {
+    const document = await this.findOne(id, userId);
+    if (updateDocumentSettingsDto.documentType !== undefined) {
+      document.documentType = updateDocumentSettingsDto.documentType;
+    }
+    if (updateDocumentSettingsDto.preventSpoilers !== undefined) {
+      document.preventSpoilers = updateDocumentSettingsDto.preventSpoilers;
+    }
     return this.documentsRepository.save(document);
   }
 

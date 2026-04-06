@@ -5,6 +5,16 @@ import { DocumentChunk } from '../documents/entities/document-chunk.entity';
 import { DocumentsService } from '../documents/documents.service';
 import { EmbeddingService } from './embedding.service';
 
+import { ChatMessage } from './entities/chat-message.entity';
+import { LlmService } from './llm.service';
+import { RagSearchService } from './rag-search.service';
+import {
+  SelectionActionDto,
+  SelectionActionType,
+} from './dto/selection-action.dto';
+import { ChatDto } from './dto/chat.dto';
+import { HumanMessage, AIMessage } from '@langchain/core/messages';
+
 export interface QaResult {
   content: string;
   similarity: number;
@@ -22,8 +32,12 @@ export class QaService {
   constructor(
     @InjectRepository(DocumentChunk)
     private readonly chunkRepository: Repository<DocumentChunk>,
+    @InjectRepository(ChatMessage)
+    private readonly chatRepository: Repository<ChatMessage>,
     private readonly documentsService: DocumentsService,
     private readonly embeddingService: EmbeddingService,
+    private readonly llmService: LlmService,
+    private readonly ragSearchService: RagSearchService,
   ) {}
 
   /**
@@ -86,5 +100,122 @@ export class QaService {
         semanticSummary: row.semanticSummary ?? null,
       })),
     };
+  }
+
+  /**
+   * Pipeline B: Explain, Summarize, or Contextual Queries on selected text using Tool-Calling Agent.
+   */
+  async selectionAction(
+    documentId: string,
+    userId: string,
+    dto: SelectionActionDto,
+  ): Promise<AsyncGenerator<any>> {
+    const document = await this.documentsService.findOne(documentId, userId);
+
+    let prompt = 'You are a helpful reading companion. ';
+    switch (dto.action) {
+      case SelectionActionType.SUMMARIZE:
+        prompt += 'Summarize the selected text concisely in simple terms.';
+        break;
+      case SelectionActionType.EXPLAIN:
+        prompt += 'Explain the selected text, including its intent and tone.';
+        break;
+      case SelectionActionType.CONTEXT_MEANING:
+        prompt +=
+          'Explain the meaning of the selected word/phrase within the provided context.';
+        break;
+      case SelectionActionType.CUSTOM_QUESTION:
+        prompt +=
+          "Answer the user's question about the selected text using the context provided.";
+        break;
+    }
+
+    return this.llmService.streamSelectionActionAgent(
+      document.fileContentHash,
+      document.preventSpoilers,
+      prompt,
+      dto.selectedText,
+      dto.surroundingContext,
+      dto.question,
+      dto.currentPage,
+    );
+  }
+
+  /**
+   * Pipeline C: Persistent Chat about the document (Progress-Aware RAG).
+   */
+  async *chat(
+    documentId: string,
+    userId: string,
+    dto: ChatDto,
+  ): AsyncGenerator<string> {
+    const document = await this.documentsService.findOne(documentId, userId);
+
+    // 1. Fetch History
+    const history = await this.chatRepository.find({
+      where: { documentId, userId },
+      order: { createdAt: 'DESC' },
+      take: 10,
+    });
+
+    // Reverse to chronological order for LangChain
+    history.reverse();
+    history.pop(); // Remove the message the user just sent if we stored it prematurely... wait we haven't stored it yet.
+
+    const lcHistory = history.map((msg) =>
+      msg.role === 'user'
+        ? new HumanMessage(msg.content)
+        : new AIMessage(msg.content),
+    );
+
+    // 2. Perform PgVector Search (RAG)
+    const ragResults = await this.ragSearchService.search(
+      dto.message,
+      document.fileContentHash,
+      document.preventSpoilers,
+      dto.maxPageRead,
+      5,
+    );
+    const contextStr = ragResults
+      .map((r) => `[Page: ${r.pageNumber || 'Unknown'}] ${r.content}`)
+      .join('\\n\\n');
+
+    // 3. Prepare Stream
+    const systemPrompt =
+      "You are an AI reading assistant. Use the following context retrieved from the book to reliably answer the user's question without revealing spoilers beyond their max page read if spoiler prevention is active.";
+
+    const stream = await this.llmService.streamChatChain(
+      dto.message,
+      contextStr,
+      lcHistory,
+      systemPrompt,
+    );
+
+    // 4. Save User Message
+    await this.chatRepository.save(
+      this.chatRepository.create({
+        documentId,
+        userId,
+        role: 'user',
+        content: dto.message,
+      }),
+    );
+
+    // 5. Stream Chunks to client and aggregate
+    let assistantFullResponse = '';
+    for await (const chunk of stream) {
+      assistantFullResponse += chunk;
+      yield chunk;
+    }
+
+    // 6. Save Assistant Response
+    await this.chatRepository.save(
+      this.chatRepository.create({
+        documentId,
+        userId,
+        role: 'assistant',
+        content: assistantFullResponse,
+      }),
+    );
   }
 }
