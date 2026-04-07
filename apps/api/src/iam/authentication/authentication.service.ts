@@ -132,28 +132,28 @@ export class AuthenticationService {
       const randomSuffix = randomUUID().substring(0, 5);
       const username = `${baseUsername}_${randomSuffix}`;
 
-      try {
-        user = this.userRepository.create({
+      await this.userRepository.upsert(
+        {
           email,
           name: name || baseUsername,
           username,
           googleId,
           avatarUrl,
-          passwordHash: null as any,
-        });
-        user = await this.userRepository.save(user);
-      } catch (error) {
-        // Handle race condition: another request created this user
-        if (error.code === '23505') {
-          // PostgreSQL unique violation
-          user = await this.userRepository.findOne({
-            where: [{ googleId }, { email }],
-          });
-          if (!user) throw error; // Re-throw if still not found
-        } else {
-          throw error;
-        }
+        },
+        ['email'],
+      );
+
+      const savedUser = await this.userRepository.findOne({
+        where: { email },
+      });
+
+      if (!savedUser) {
+        throw new UnauthorizedException(
+          'Failed to retrieve user after creation.',
+        );
       }
+
+      user = savedUser;
     }
 
     const tokens = await this.generateTokens(user);
