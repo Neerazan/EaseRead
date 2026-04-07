@@ -111,6 +111,10 @@ export class AuthenticationService {
       throw new UnauthorizedException('Invalid Google token payload.');
     }
 
+    if (!payload.email_verified) {
+      throw new UnauthorizedException('Email not verified by Google.');
+    }
+
     const { email, sub: googleId, name, picture: avatarUrl } = payload;
 
     let user = await this.userRepository.findOne({
