@@ -20,5 +20,5 @@ export class UserResponseDto {
   updatedAt: Date;
 
   @Expose()
-  avatarUrl: string;
+  avatarUrl: string | null;
 }
