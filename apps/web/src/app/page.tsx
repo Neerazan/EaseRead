@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Home() {
   const router = useRouter();
@@ -44,10 +45,13 @@ export default function Home() {
       <main className="w-full max-w-md bg-white/80 dark:bg-black/50 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl rounded-3xl p-8 transition-all hover:shadow-indigo-500/10">
         <div className="flex flex-col items-center transform transition-all duration-500">
           {user?.avatarUrl ? (
-            <img
+            <Image
               src={user.avatarUrl}
               alt="Avatar"
-              className="w-24 h-24 rounded-full mb-5 shadow-lg border-4 border-white dark:border-zinc-800"
+              width={96}
+              height={96}
+              className="w-24 h-24 rounded-full mb-5 shadow-lg border-4 border-white dark:border-zinc-800 flex-shrink-0"
+              referrerPolicy="no-referrer"
             />
           ) : (
             <div className="w-24 h-24 rounded-full mb-5 shadow-lg bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-3xl font-bold text-indigo-600 dark:text-indigo-300">
