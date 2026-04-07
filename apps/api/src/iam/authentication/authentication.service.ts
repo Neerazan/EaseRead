@@ -14,6 +14,9 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
+import { OAuth2Client } from 'google-auth-library';
+import googleOAuthConfig from '../config/google-oauth.config';
+import { GoogleTokenDto } from './dto/google-token.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -28,7 +31,14 @@ export class AuthenticationService {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
 
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
-  ) {}
+
+    @Inject(googleOAuthConfig.KEY)
+    private readonly googleConfiguration: ConfigType<typeof googleOAuthConfig>,
+  ) {
+    this.oauthClient = new OAuth2Client(this.googleConfiguration.clientId);
+  }
+
+  private readonly oauthClient: OAuth2Client;
 
   async signUp(signUpDto: SignUpDto) {
     const { email, name, password, username } = signUpDto;
@@ -60,7 +70,7 @@ export class AuthenticationService {
       ],
     });
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       throw new UnauthorizedException('Invalid email or password.');
     }
 
@@ -80,6 +90,62 @@ export class AuthenticationService {
         excludeExtraneousValues: true,
       }),
       message: 'Logged in successfully!',
+    };
+  }
+
+  async googleLogin(googleTokenDto: GoogleTokenDto) {
+    const { token } = googleTokenDto;
+
+    let ticket;
+    try {
+      ticket = await this.oauthClient.verifyIdToken({
+        idToken: token,
+        audience: this.googleConfiguration.clientId,
+      });
+    } catch (error) {
+      throw new UnauthorizedException('Invalid Google token.');
+    }
+
+    const payload = ticket.getPayload();
+    if (!payload?.email) {
+      throw new UnauthorizedException('Invalid Google token payload.');
+    }
+
+    const { email, sub: googleId, name, picture: avatarUrl } = payload;
+
+    let user = await this.userRepository.findOne({
+      where: [{ googleId }, { email }],
+    });
+
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.avatarUrl = avatarUrl;
+        await this.userRepository.save(user);
+      }
+    } else {
+      const baseUsername = email.split('@')[0];
+      const randomSuffix = randomUUID().substring(0, 5);
+      const username = `${baseUsername}_${randomSuffix}`;
+
+      user = this.userRepository.create({
+        email,
+        name: name || baseUsername,
+        username,
+        googleId,
+        avatarUrl,
+        passwordHash: null as any,
+      });
+      user = await this.userRepository.save(user);
+    }
+
+    const tokens = await this.generateTokens(user);
+    return {
+      ...tokens,
+      user: plainToInstance(UserResponseDto, user, {
+        excludeExtraneousValues: true,
+      }),
+      message: 'Logged in successfully with Google!',
     };
   }
 

@@ -14,9 +14,12 @@ import jwtConfig from './config/jwt.config';
 import { BcryptService } from './hashing/bcrypt.service';
 import { HashingService } from './hashing/hashing.service';
 
+import googleOAuthConfig from './config/google-oauth.config';
+
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(googleOAuthConfig),
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     RedisModule,

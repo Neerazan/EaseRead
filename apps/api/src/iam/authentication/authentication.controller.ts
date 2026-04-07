@@ -18,6 +18,7 @@ import { ClearAuthCookies } from './decorators/clear-auth-cookies.decorator';
 import { SetAuthCookies } from './decorators/set-auth-cookies.decorator';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { GoogleTokenDto } from './dto/google-token.dto';
 import { AuthType } from './enum/auth-type.enum';
 import { AuthenticationInterceptor } from './interceptors/authentication.interceptor';
 
@@ -38,6 +39,14 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
+  }
+
+  @Post('google')
+  @SetAuthCookies()
+  @Auth(AuthType.None)
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(@Body() googleTokenDto: GoogleTokenDto) {
+    return this.authService.googleLogin(googleTokenDto);
   }
 
   @SetAuthCookies()
