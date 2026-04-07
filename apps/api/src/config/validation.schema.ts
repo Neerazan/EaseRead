@@ -22,4 +22,6 @@ export const validationSchema = Joi.object({
   EMBEDDING_MODEL: Joi.string().default('gemini-embedding-001'),
   EMBEDDING_DIMENSION: Joi.number().default(3072),
   GEMINI_CHAT_MODEL: Joi.string().default('gemini-1.5-flash'),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
 });

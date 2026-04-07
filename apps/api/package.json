@@ -47,6 +47,7 @@
     "class-validator": "^0.14.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
+    "google-auth-library": "^10.6.2",
     "ioredis": "^5.9.2",
     "joi": "^18.0.2",
     "nest-winston": "^1.10.2",

@@ -18,4 +18,7 @@ export class UserResponseDto {
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  avatarUrl: string | null;
 }

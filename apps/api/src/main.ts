@@ -47,6 +47,11 @@ async function bootstrap() {
     bufferLogs: true,
   });
 
+  app.enableCors({
+    origin: ['http://localhost:8000', 'http://localhost:3000'],
+    credentials: true,
+  });
+
   // Use custom logger
   const logger = app.get(LoggerService);
   const appConfiguration = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);

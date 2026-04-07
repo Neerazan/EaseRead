@@ -20,8 +20,15 @@ export class User extends AbstractAuditEntity {
 
   /* ---------- Authentication ---------- */
 
-  @Column({ nullable: false, select: false })
-  passwordHash: string;
+  @Column({ nullable: true, select: false })
+  passwordHash?: string;
+
+  @Index({ unique: true })
+  @Column({ nullable: true })
+  googleId?: string;
+
+  @Column({ nullable: true })
+  avatarUrl?: string;
 
   /* ---------- Status ---------- */
 
