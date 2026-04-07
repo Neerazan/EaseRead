@@ -33,15 +33,18 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ token: credentialResponse.credential }),
       });
-      const data = await res.json();
+      const responseJson = await res.json();
 
-      if (res.ok) {
+      if (res.ok && responseJson.success) {
         // Simple way to share user state across simple test frontend.
         // For production, consider React Context or fetching from a /me endpoint using HttpOnly cookies!
-        localStorage.setItem('userContext', JSON.stringify(data.user));
+        localStorage.setItem(
+          'userContext',
+          JSON.stringify(responseJson.data.user),
+        );
         router.push('/'); // Redirecting to home
       } else {
-        setError(data.message || 'Login failed');
+        setError(responseJson.message || 'Login failed');
       }
     } catch (err) {
       setError('An error occurred during login.');

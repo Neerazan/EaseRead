@@ -10,10 +10,16 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('userContext');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-        setLoading(false);
+      if (storedUser && storedUser !== 'undefined') {
+        try {
+          setUser(JSON.parse(storedUser));
+          setLoading(false);
+        } catch (error) {
+          localStorage.removeItem('userContext');
+          router.push('/login');
+        }
       } else {
+        localStorage.removeItem('userContext');
         // If not logged in, redirect to the new /login route!
         router.push('/login');
       }
