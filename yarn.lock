@@ -601,6 +601,7 @@ __metadata:
   resolution: "@easeread/web@workspace:apps/web"
   dependencies:
     "@easeread/shared": "workspace:*"
+    "@react-oauth/google": "npm:^0.13.4"
     "@tailwindcss/postcss": "npm:^4"
     "@types/node": "npm:^20"
     "@types/react": "npm:^19"
@@ -2290,6 +2291,16 @@ __metadata:
   version: 0.2.9
   resolution: "@pkgr/core@npm:0.2.9"
   checksum: 10c0/ac8e4e8138b1a7a4ac6282873aef7389c352f1f8b577b4850778f5182e4a39a5241facbe48361fec817f56d02b51691b383010843fb08b34a8e8ea3614688fd5
+  languageName: node
+  linkType: hard
+
+"@react-oauth/google@npm:^0.13.4":
+  version: 0.13.4
+  resolution: "@react-oauth/google@npm:0.13.4"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/0df487a22a4bd896c6ba3f7495618799c7dadf160776339b749a494bf88898c901b9e3db72bf6902039c927c465a23fe45ef12e948666a5ae62e79687d121eab
   languageName: node
   linkType: hard
 
