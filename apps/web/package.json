@@ -12,9 +12,11 @@
   "dependencies": {
     "@easeread/shared": "workspace:*",
     "@react-oauth/google": "^0.13.4",
+    "lucide-react": "^1.11.0",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-pdf": "^10.4.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
