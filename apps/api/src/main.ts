@@ -48,8 +48,15 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['http://localhost:8000', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:8000',
+      'http://127.0.0.1:8000',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+    ],
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   // Use custom logger
